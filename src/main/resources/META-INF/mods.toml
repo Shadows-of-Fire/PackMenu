@@ -1,0 +1,38 @@
+modLoader="javafml" #mandatory
+
+loaderVersion="[28,)" #mandatory
+
+authors="Shadows_of_Fire" #optional
+
+[[mods]] #mandatory
+
+modId="packmenu" #mandatory
+
+version="${file.jarVersion}" #mandatory
+
+displayName="Pack Menu" #mandatory
+
+description='''
+Adds the ability to change the background of the main menu, as well as edit some other menu-related things.
+'''
+
+[[dependencies.packmenu]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[30,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.packmenu]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.packmenu]]
+    modId="placebo"
+    mandatory=true
+    versionRange="[3,)"
+    ordering="NONE"
+    side="BOTH"
