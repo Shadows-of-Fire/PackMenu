@@ -58,7 +58,7 @@ public class PackMenuClient {
 
 	@SubscribeEvent
 	public void hijackMenu(GuiOpenEvent e) {
-		if (e.getGui().getClass() == MainMenuScreen.class) {
+		if (e.getGui() != null && e.getGui().getClass() == MainMenuScreen.class) {
 			e.setGui(enableATMMenu ? new ATMMenuScreen() : new ExtendedMenuScreen());
 		}
 	}
