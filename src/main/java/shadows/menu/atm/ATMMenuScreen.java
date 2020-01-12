@@ -50,7 +50,7 @@ public class ATMMenuScreen extends MainMenuScreen {
 
 		this.widthCopyright = this.font.getStringWidth("Copyright Mojang AB. Do not distribute!");
 		this.widthCopyrightRest = this.width - this.widthCopyright - 2;
-		int maxHeight = this.height / 4;
+		int maxHeight = this.height / 4 - 30;
 		int buttonWidth = 120, buttonHeight = 30;
 		int xSpacing = buttonWidth + 5, ySpacing = buttonHeight + 5;
 
@@ -115,7 +115,7 @@ public class ATMMenuScreen extends MainMenuScreen {
 
 		this.minecraft.getTextureManager().bindTexture(BACKGROUND);
 
-		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 1080, 1920, 1080, 1920);
 		float f1 = 1.0F;
 		int l = MathHelper.ceil(f1 * 255.0F) << 24;
 		if ((l & -67108864) != 0) {

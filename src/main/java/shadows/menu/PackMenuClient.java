@@ -21,6 +21,7 @@ public class PackMenuClient {
 	public static boolean drawJavaEd = true;
 	public static boolean drawForgeInfo = true;
 	public static boolean drawPanorama = false;
+	public static boolean customWidgetsTex = false;
 	public static Offset ssp, smp, mods, custom, options, quit, lang, access, title, javaEd, forgeWarn, splash;
 	public static URI customButtonDest = null;
 
@@ -33,6 +34,7 @@ public class PackMenuClient {
 		drawJavaEd = cfg.getBoolean("Draw Java Edition", "general", true, "If the \"Java Edition\" text is drawn.");
 		drawForgeInfo = cfg.getBoolean("Draw Forge Info", "general", true, "If forge information is drawn at the top center.  This includes beta and update warnings.");
 		drawPanorama = cfg.getBoolean("Draw Panorama", "general", false, "If the panorama, and it's fade-in, are rendered.  Enabling this disables the use of the background image.");
+		customWidgetsTex = cfg.getBoolean("Custom Widgets Texture", "general", false, "If the main menu buttons will use a custom texture, located at \"assets/packmenu/textures/gui/widgets.png\".  Note that this does not impact the accessibility options button, which needs to be changed at \"assets/minecraft/textures/gui/accessibility.png\".");
 		ssp = getOffset("Singleplayer", cfg);
 		smp = getOffset("Multiplayer", cfg);
 		mods = getOffset("Mods", cfg);

@@ -3,7 +3,9 @@ package shadows.menu;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AccessibilityScreen;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.LanguageScreen;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.gui.screen.MultiplayerScreen;
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.BrandingControl;
 public class ExtendedMenuScreen extends MainMenuScreen {
 
 	public static final ResourceLocation BACKGROUND = new ResourceLocation(PackMenu.MODID, "textures/gui/background.png");
+	public static final ResourceLocation WIDGETS = new ResourceLocation(PackMenu.MODID, "textures/gui/widgets.png");
 
 	@Override
 	protected void init() {
@@ -35,39 +38,39 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 		int buttonHeight = this.height / 4 + 48;
 
 		//Singleplayer Button
-		this.addButton(new Button(PackMenuClient.ssp.x + this.width / 2 - 100, PackMenuClient.ssp.y + buttonHeight, 200, 20, I18n.format("menu.singleplayer"), (p_213089_1_) -> {
+		this.addButton(new CustomButton(PackMenuClient.ssp.x + this.width / 2 - 100, PackMenuClient.ssp.y + buttonHeight, 200, 20, I18n.format("menu.singleplayer"), (p_213089_1_) -> {
 			this.minecraft.displayGuiScreen(new WorldSelectionScreen(this));
 		}));
 
 		//Multiplayer Button
-		this.addButton(new Button(PackMenuClient.smp.x + this.width / 2 - 100, PackMenuClient.smp.y + buttonHeight + 24 * 1, 200, 20, I18n.format("menu.multiplayer"), (p_213086_1_) -> {
+		this.addButton(new CustomButton(PackMenuClient.smp.x + this.width / 2 - 100, PackMenuClient.smp.y + buttonHeight + 24 * 1, 200, 20, I18n.format("menu.multiplayer"), (p_213086_1_) -> {
 			this.minecraft.displayGuiScreen(new MultiplayerScreen(this));
 		}));
 
 		//Realms Button
-		this.addButton(new Button(PackMenuClient.custom.x + this.width / 2 + 2, PackMenuClient.custom.y + buttonHeight + 24 * 2, 98, 20, I18n.format("packmenu.custom_button"), (p_213095_1_) -> {
+		this.addButton(new CustomButton(PackMenuClient.custom.x + this.width / 2 + 2, PackMenuClient.custom.y + buttonHeight + 24 * 2, 98, 20, I18n.format("packmenu.custom_button"), (p_213095_1_) -> {
 			if (PackMenuClient.customButtonDest != null) {
 				Util.getOSType().openURI(PackMenuClient.customButtonDest);
 			}
 		}));
 
 		//Mods Button
-		this.addButton(new Button(PackMenuClient.mods.x + this.width / 2 - 100, PackMenuClient.mods.y + buttonHeight + 24 * 2, 98, 20, I18n.format("fml.menu.mods"), button -> {
+		this.addButton(new CustomButton(PackMenuClient.mods.x + this.width / 2 - 100, PackMenuClient.mods.y + buttonHeight + 24 * 2, 98, 20, I18n.format("fml.menu.mods"), button -> {
 			this.minecraft.displayGuiScreen(new net.minecraftforge.fml.client.gui.ModListScreen(this));
 		}));
 
 		//Language Button
-		this.addButton(new ImageButton(PackMenuClient.lang.x + this.width / 2 - 124, PackMenuClient.lang.y + buttonHeight + 72 + 12, 20, 20, 0, 106, 20, Widget.WIDGETS_LOCATION, 256, 256, (p_213090_1_) -> {
+		this.addButton(new ImageButton(PackMenuClient.lang.x + this.width / 2 - 124, PackMenuClient.lang.y + buttonHeight + 72 + 12, 20, 20, 0, 106, 20, PackMenuClient.customWidgetsTex ? WIDGETS : Widget.WIDGETS_LOCATION, 256, 256, (p_213090_1_) -> {
 			this.minecraft.displayGuiScreen(new LanguageScreen(this, this.minecraft.gameSettings, this.minecraft.getLanguageManager()));
 		}, I18n.format("narrator.button.language")));
 
 		//Options Button
-		this.addButton(new Button(PackMenuClient.options.x + this.width / 2 - 100, PackMenuClient.options.y + buttonHeight + 72 + 12, 98, 20, I18n.format("menu.options"), (p_213096_1_) -> {
+		this.addButton(new CustomButton(PackMenuClient.options.x + this.width / 2 - 100, PackMenuClient.options.y + buttonHeight + 72 + 12, 98, 20, I18n.format("menu.options"), (p_213096_1_) -> {
 			this.minecraft.displayGuiScreen(new OptionsScreen(this, this.minecraft.gameSettings));
 		}));
 
 		//Quit Button
-		this.addButton(new Button(PackMenuClient.quit.x + this.width / 2 + 2, PackMenuClient.quit.y + buttonHeight + 72 + 12, 98, 20, I18n.format("menu.quit"), (p_213094_1_) -> {
+		this.addButton(new CustomButton(PackMenuClient.quit.x + this.width / 2 + 2, PackMenuClient.quit.y + buttonHeight + 72 + 12, 98, 20, I18n.format("menu.quit"), (p_213094_1_) -> {
 			this.minecraft.shutdown();
 		}));
 
@@ -153,6 +156,31 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 				this.buttons.get(i).render(mouseX, mouseY, partialTicks);
 			}
 		}
+	}
+
+	public static class CustomButton extends Button {
+
+		public CustomButton(int x, int y, int width, int height, String message, IPressable handler) {
+			super(x, y, width, height, message, handler);
+		}
+
+		@Override
+		public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
+			Minecraft minecraft = Minecraft.getInstance();
+			FontRenderer fontrenderer = minecraft.fontRenderer;
+			minecraft.getTextureManager().bindTexture(PackMenuClient.customWidgetsTex ? WIDGETS : Widget.WIDGETS_LOCATION);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+			int i = this.getYImage(this.isHovered());
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			this.blit(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+			this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+			this.renderBg(minecraft, p_renderButton_1_, p_renderButton_2_);
+			int j = getFGColor();
+			this.drawCenteredString(fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		}
+
 	}
 
 }
