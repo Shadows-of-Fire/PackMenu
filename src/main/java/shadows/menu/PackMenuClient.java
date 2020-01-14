@@ -1,18 +1,32 @@
 package shadows.menu;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.MainMenuScreen;
+import net.minecraft.resources.FilePack;
+import net.minecraft.resources.IPackFinder;
+import net.minecraft.resources.ResourcePackInfo;
+import net.minecraft.resources.ResourcePackInfo.IFactory;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
 import shadows.menu.atm.ATMMenuScreen;
 import shadows.placebo.config.Configuration;
 
 public class PackMenuClient {
+
+	public static final File RESOURCE_PACK = new File(FMLPaths.GAMEDIR.get().toFile(), "packmenu/resources.zip");
 
 	public static boolean enableATMMenu = false;
 
@@ -25,8 +39,8 @@ public class PackMenuClient {
 	public static Offset ssp, smp, mods, custom, options, quit, lang, access, title, javaEd, forgeWarn, splash;
 	public static URI customButtonDest = null;
 
-	public static void load() {
-		MinecraftForge.EVENT_BUS.register(new PackMenuClient());
+	public void load() {
+		MinecraftForge.EVENT_BUS.addListener(this::hijackMenu);
 		Configuration cfg = new Configuration(PackMenu.MODID);
 		enableATMMenu = cfg.getBoolean("All The Mods Menu", "ATM", false, "If the custom ATM Menu is used.  All other config values are ignored when using this option.");
 		drawTitle = cfg.getBoolean("Draw Title", "general", true, "If the title (the giant minecraft text) is drawn.");
@@ -34,7 +48,7 @@ public class PackMenuClient {
 		drawJavaEd = cfg.getBoolean("Draw Java Edition", "general", true, "If the \"Java Edition\" text is drawn.");
 		drawForgeInfo = cfg.getBoolean("Draw Forge Info", "general", true, "If forge information is drawn at the top center.  This includes beta and update warnings.");
 		drawPanorama = cfg.getBoolean("Draw Panorama", "general", false, "If the panorama, and it's fade-in, are rendered.  Enabling this disables the use of the background image.");
-		customWidgetsTex = cfg.getBoolean("Custom Widgets Texture", "general", false, "If the main menu buttons will use a custom texture, located at \"assets/packmenu/textures/gui/widgets.png\".  Note that this does not impact the accessibility options button, which needs to be changed at \"assets/minecraft/textures/gui/accessibility.png\".");
+		customWidgetsTex = cfg.getBoolean("Custom Widgets Texture", "general", true, "If the main menu buttons will use a custom texture, located at \"assets/packmenu/textures/gui/widgets.png\".  Note that this does not impact the accessibility options button, which needs to be changed at \"assets/minecraft/textures/gui/accessibility.png\".");
 		ssp = getOffset("Singleplayer", cfg);
 		smp = getOffset("Multiplayer", cfg);
 		mods = getOffset("Mods", cfg);
@@ -54,6 +68,32 @@ public class PackMenuClient {
 			PackMenu.LOGGER.error("Invalid URL for custom button.");
 		}
 		if (cfg.hasChanged()) cfg.save();
+
+		if (!RESOURCE_PACK.exists()) {
+			try (InputStream stream = this.getClass().getResourceAsStream("/resources.zip")) {
+				RESOURCE_PACK.getParentFile().mkdir();
+				RESOURCE_PACK.createNewFile();
+				byte[] buffer = new byte[stream.available()];
+				stream.read(buffer);
+				OutputStream outStream = new FileOutputStream(RESOURCE_PACK);
+				outStream.write(buffer);
+				outStream.close();
+			} catch (IOException e) {
+				PackMenu.LOGGER.error("Failed to copy default resouces into the game directory!");
+			}
+		}
+
+		Minecraft.getInstance().getResourcePackList().addPackFinder(new IPackFinder() {
+			@Override
+			public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> map, IFactory<T> factory) {
+				final T packInfo = ResourcePackInfo.createResourcePack(PackMenu.MODID, true, () -> new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP);
+				if (packInfo == null) {
+					PackMenu.LOGGER.error("Failed to load resource pack, some things may not work.");
+					return;
+				}
+				map.put(PackMenu.MODID, packInfo);
+			}
+		});
 	}
 
 	@SubscribeEvent

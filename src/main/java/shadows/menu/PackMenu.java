@@ -15,7 +15,7 @@ public class PackMenu {
 
 	public PackMenu() {
 		if (FMLEnvironment.dist == Dist.CLIENT) {
-			PackMenuClient.load();
+			new PackMenuClient().load();
 		} else LOGGER.error("Running on a dedicated server, disabling mod.");
 	}
 
