@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,6 +13,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.resources.FilePack;
+import net.minecraft.resources.FolderPack;
 import net.minecraft.resources.IPackFinder;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackInfo.IFactory;
@@ -27,6 +27,7 @@ import shadows.placebo.config.Configuration;
 public class PackMenuClient {
 
 	public static final File RESOURCE_PACK = new File(FMLPaths.GAMEDIR.get().toFile(), "packmenu/resources.zip");
+	public static final File FOLDER_PACK = new File(FMLPaths.GAMEDIR.get().toFile(), "packmenu/resources");
 
 	public static boolean enableATMMenu = false;
 
@@ -61,6 +62,7 @@ public class PackMenuClient {
 		javaEd = getOffset("Java Edition Text", cfg);
 		forgeWarn = getOffset("Forge Info", cfg);
 		splash = getOffset("Splash Text", cfg);
+		boolean folderPack = cfg.getBoolean("Folder Pack", "general", false, "If the resource pack is loaded from /resources instead of /resources.zip");
 		String url = cfg.getString("Custom URL", "Custom Button", "", "A URL for this button to link to.  (This was previously the realms button.)");
 		try {
 			customButtonDest = new URL(url).toURI();
@@ -69,14 +71,16 @@ public class PackMenuClient {
 		}
 		if (cfg.hasChanged()) cfg.save();
 
-		if (!RESOURCE_PACK.exists()) {
+		if (!folderPack && !RESOURCE_PACK.exists()) {
 			try (InputStream stream = this.getClass().getResourceAsStream("/resources.zip")) {
 				RESOURCE_PACK.getParentFile().mkdir();
 				RESOURCE_PACK.createNewFile();
-				byte[] buffer = new byte[stream.available()];
-				stream.read(buffer);
-				OutputStream outStream = new FileOutputStream(RESOURCE_PACK);
-				outStream.write(buffer);
+				byte[] buffer = new byte[600000];
+				FileOutputStream outStream = new FileOutputStream(RESOURCE_PACK);
+				int i = 0;
+				while ((i = stream.read(buffer)) != -1) {
+					outStream.write(buffer, 0, i);
+				}
 				outStream.close();
 			} catch (IOException e) {
 				PackMenu.LOGGER.error("Failed to copy default resouces into the game directory!");
@@ -86,7 +90,7 @@ public class PackMenuClient {
 		Minecraft.getInstance().getResourcePackList().addPackFinder(new IPackFinder() {
 			@Override
 			public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> map, IFactory<T> factory) {
-				final T packInfo = ResourcePackInfo.createResourcePack(PackMenu.MODID, true, () -> new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP);
+				final T packInfo = ResourcePackInfo.createResourcePack(PackMenu.MODID, true, () -> folderPack ? new FolderPack(FOLDER_PACK) : new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP);
 				if (packInfo == null) {
 					PackMenu.LOGGER.error("Failed to load resource pack, some things may not work.");
 					return;
