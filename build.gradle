@@ -11,9 +11,9 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 
-version = '1.1.4'
+version = '1.1.6'
 group = 'shadows.menu'
-archivesBaseName = 'PackMenu-1.15.1'
+archivesBaseName = 'PackMenu-1.15.2'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -49,9 +49,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.1-30.0.36'
-	compile fg.deobf('mezz.jei:jei-1.15.1:+')
-	//compile fg.deobf('mcp.mobius.waila:Hwyla:1.10+')
+    minecraft 'net.minecraftforge:forge:1.15.2-31.0.1'
+	compile fg.deobf('mezz.jei:jei-1.15.2:+')
+	compile fg.deobf('mcp.mobius.waila:Hwyla:1.10+')
 	compile fileTree(dir: 'libs', include: '*.jar')
 }
 

@@ -21,6 +21,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.BrandingControl;
+import net.minecraftforge.fml.client.gui.screen.ModListScreen;
 
 public class ExtendedMenuScreen extends MainMenuScreen {
 
@@ -56,7 +57,7 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 		//Mods Button
 		this.addButton(new CustomButton(PackMenuClient.mods.x + this.width / 2 - 100, PackMenuClient.mods.y + buttonHeight + 24 * 2, 98, 20, I18n.format("fml.menu.mods"), button -> {
-			this.minecraft.displayGuiScreen(new net.minecraftforge.fml.client.gui.ModListScreen(this));
+			this.minecraft.displayGuiScreen(new ModListScreen(this));
 		}));
 
 		//Language Button

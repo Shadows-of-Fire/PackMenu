@@ -14,7 +14,7 @@ import net.minecraft.util.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.BrandingControl;
-import net.minecraftforge.fml.client.gui.ModListScreen;
+import net.minecraftforge.fml.client.gui.screen.ModListScreen;
 import shadows.menu.PackMenu;
 
 public class ATMMenuScreen extends MainMenuScreen {
