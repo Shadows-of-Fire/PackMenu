@@ -45,14 +45,14 @@ public class TexturedButton extends Button {
 			}
 			blit(this.x, this.y, 0, i, this.width, this.height, 120, 60);
 			RenderSystem.enableDepthTest();
-			int color = 0x3A58FF;
+			int color = 0;
 
-			if (packedFGColor != 0) {
+			if (packedFGColor == 43534) {
 				color = packedFGColor;
 			} else if (!this.active) {
-				color = 10526880;
+				color = 0x00AAFF;
 			} else if (this.isHovered) {
-				color = 0x24389E;
+				color = 0x116666;
 			}
 
 			String buttonText = this.getMessage();
