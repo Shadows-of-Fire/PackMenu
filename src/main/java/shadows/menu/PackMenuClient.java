@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import shadows.menu.atm.ATMMenuScreen;
+import shadows.menu.logo.Logo;
 import shadows.menu.reload.ButtonManager;
 import shadows.placebo.config.Configuration;
 
@@ -37,6 +38,10 @@ public class PackMenuClient {
 	public static boolean drawPanorama = false;
 	public static Offset title, javaEd, forgeWarn, splash;
 	public static boolean folderPack = false;
+	public static float splashRotation = -20.0F;
+	public static int splashColor = 16776960 | (255 << 24);
+
+	public static Logo logo = null;
 
 	public void load() {
 		MinecraftForge.EVENT_BUS.addListener(this::hijackMenu);
@@ -91,7 +96,10 @@ public class PackMenuClient {
 		javaEd = getOffset("Java Edition Text", cfg);
 		forgeWarn = getOffset("Forge Info", cfg);
 		splash = getOffset("Splash Text", cfg);
+		splashRotation = cfg.getFloat("Rotation", "splash text", splashRotation, -360F, 360F, "The rotation value of the splash text.");
+		splashColor = cfg.getInt("Color", "splash text", splashColor, -Integer.MAX_VALUE, Integer.MAX_VALUE, "The color of the splash text.");
 		folderPack = cfg.getBoolean("Folder Pack", "general", false, "If the resource pack is loaded from /resources instead of /resources.zip");
+		logo = Logo.read(cfg);
 		if (cfg.hasChanged()) cfg.save();
 	}
 

@@ -42,12 +42,19 @@ public class JsonButton extends Button {
 	 */
 	protected final String langKey;
 
-	public JsonButton(int xPos, int yPos, int width, int height, String langKey, ActionInstance handler) {
+	/**
+	 * The color of the text drawn on this button.
+	 */
+	protected final int fontColor, hoverFontColor;
+
+	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
 		super(xPos, yPos, width, height, langKey, handler);
 		handler.setSource(this);
 		this.xOff = xPos;
 		this.yOff = yPos;
 		this.langKey = langKey;
+		this.fontColor = fontColor;
+		this.hoverFontColor = hoverFontColor;
 	}
 
 	public JsonButton texture(ResourceLocation texture, int u, int v, int hoverU, int hoverV, int texWidth, int texHeight) {
@@ -113,8 +120,7 @@ public class JsonButton extends Button {
 	private void renderImageButton(int mouseX, int mouseY, float partial) {
 		Minecraft mc = Minecraft.getInstance();
 		this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-		Minecraft minecraft = Minecraft.getInstance();
-		minecraft.getTextureManager().bindTexture(this.texture);
+		mc.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
 		int x = u, y = v;
 		if (this.isHovered()) {
@@ -123,15 +129,7 @@ public class JsonButton extends Button {
 		}
 		blit(this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
 		RenderSystem.enableDepthTest();
-		int color = 0;
-
-		if (packedFGColor == 43534) {
-			color = packedFGColor;
-		} else if (!this.active) {
-			color = 0x00AAFF;
-		} else if (this.isHovered) {
-			color = 0x116666;
-		}
+		int color = getFGColor();
 
 		String buttonText = this.getMessage();
 		int strWidth = mc.fontRenderer.getStringWidth(buttonText);
@@ -140,6 +138,11 @@ public class JsonButton extends Button {
 		if (strWidth > width - 6 && strWidth > ellipsisWidth) buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
 
 		drawCenteredStringNoShadow(mc.fontRenderer, buttonText, this.x + this.width / 2 + 5, this.y + (this.height - 12) / 2, color);
+	}
+
+	@Override
+	public int getFGColor() {
+		return this.active ? fontColor : hoverFontColor;
 	}
 
 	public static JsonButton deserialize(JsonObject obj) {
@@ -157,16 +160,19 @@ public class JsonButton extends Button {
 		JsonElement action = obj.get("action");
 		JsonElement texWidth = obj.get("texWidth");
 		JsonElement texHeight = obj.get("texHeight");
+		JsonElement fontColor = obj.get("fontColor");
+		JsonElement hoverFontColor = obj.get("hoverFontColor");
 
 		ResourceLocation _tex = tex == null ? WIDGETS_LOCATION : new ResourceLocation(tex.getAsString());
 		int _u = get(u, 0), _v = get(v, 0), _hoverU = get(hoverU, 0), _hoverV = get(hoverV, 0);
 		int _x = get(x, 0), _y = get(y, 0), _width = get(width, 0), _height = get(height, 0);
 		int _texWidth = get(texWidth, 256), _texHeight = get(texHeight, 256);
 		boolean _widgets = widgets == null ? _tex.toString().contains("widgets") : widgets.getAsBoolean();
+		int _fontColor = get(fontColor, 16777215), _hoverFontColor = get(hoverFontColor, 10526880);
 		String display = langKey == null ? "" : I18n.format(langKey.getAsString());
 		ButtonAction act = ButtonAction.valueOf(action.getAsString().toUpperCase(Locale.ROOT));
 		Object data = act.readData(obj);
-		return new JsonButton(_x, _y, _width, _height, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets);
+		return new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets);
 	}
 
 	private static int get(JsonElement e, int def) {

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.AccessibilityScreen;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.LanguageScreen;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.gui.screen.MultiplayerScreen;
@@ -72,6 +73,8 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 				this.blit(PackMenuClient.title.x + xCoord + 155, PackMenuClient.title.y + 30, 0, 45, 155, 44);
 			}
 
+			if (PackMenuClient.logo != null) PackMenuClient.logo.draw(this);
+
 			this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_EDITION);
 
 			if (PackMenuClient.drawJavaEd) blit(PackMenuClient.javaEd.x + xCoord + 88, PackMenuClient.javaEd.y + 67, 0.0F, 0.0F, 98, 14, 128, 16);
@@ -90,24 +93,16 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 			if (this.splashText != null && PackMenuClient.drawSplash) {
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(PackMenuClient.splash.x + this.width / 2 + 90, PackMenuClient.splash.y + 70, 0);
-				RenderSystem.rotatef(-20.0F, 0.0F, 0.0F, 1.0F);
+				RenderSystem.rotatef(PackMenuClient.splashRotation, 0.0F, 0.0F, 1.0F);
 				float f2 = 1.8F - MathHelper.abs(MathHelper.sin(Util.milliTime() % 1000L / 1000.0F * ((float) Math.PI * 2F)) * 0.1F);
 				f2 = f2 * 100.0F / (this.font.getStringWidth(this.splashText) + 32);
 				RenderSystem.scalef(f2, f2, f2);
-				this.drawCenteredString(this.font, this.splashText, 0, -8, 16776960 | l);
+				this.drawCenteredString(this.font, this.splashText, 0, -8, PackMenuClient.splashColor);
 				RenderSystem.popMatrix();
 			}
 
 			String s = "Minecraft " + SharedConstants.getVersion().getName();
 			s = s + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
-
-			BrandingControl.forEachLine(true, true, (brdline, brd) -> this.drawString(this.font, brd, 2, this.height - (10 + brdline * (this.font.FONT_HEIGHT + 1)), 16777215 | l));
-
-			BrandingControl.forEachAboveCopyrightLine((brdline, brd) -> this.drawString(this.font, brd, this.width - font.getStringWidth(brd), this.height - (10 + (brdline + 1) * (this.font.FONT_HEIGHT + 1)), 16777215 | l));
-			this.drawString(this.font, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, 16777215 | l);
-			if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height) {
-				fill(this.widthCopyrightRest, this.height - 1, this.widthCopyrightRest + this.widthCopyright, this.height, 16777215 | l);
-			}
 
 			for (Widget widget : this.buttons) {
 				widget.setAlpha(f1);
@@ -115,6 +110,14 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 			for (int i = 0; i < this.buttons.size(); ++i) {
 				this.buttons.get(i).render(mouseX, mouseY, partialTicks);
+			}
+
+			BrandingControl.forEachLine(true, true, (brdline, brd) -> this.drawString(this.font, brd, 2, this.height - (10 + brdline * (this.font.FONT_HEIGHT + 1)), 16777215 | l));
+
+			BrandingControl.forEachAboveCopyrightLine((brdline, brd) -> this.drawString(this.font, brd, this.width - font.getStringWidth(brd), this.height - (10 + (brdline + 1) * (this.font.FONT_HEIGHT + 1)), 16777215 | l));
+			this.drawString(this.font, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, 16777215 | l);
+			if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height) {
+				fill(this.widthCopyrightRest, this.height - 1, this.widthCopyrightRest + this.widthCopyright, this.height, 16777215 | l);
 			}
 		}
 	}
@@ -162,6 +165,10 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 		this.addButton(new ImageButton(buttonWidth + 104, buttonHeight + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_TEXTURES, 32, 64, (p_213088_1_) -> {
 			this.minecraft.displayGuiScreen(new AccessibilityScreen(this, this.minecraft.gameSettings));
 		}, I18n.format("narrator.button.accessibility")));
+	}
+
+	public FontRenderer getFont() {
+		return font;
 	}
 
 }
