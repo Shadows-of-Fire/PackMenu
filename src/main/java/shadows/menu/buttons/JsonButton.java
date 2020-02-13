@@ -142,7 +142,7 @@ public class JsonButton extends Button {
 
 	@Override
 	public int getFGColor() {
-		return this.active ? fontColor : hoverFontColor;
+		return !this.isHovered ? fontColor : hoverFontColor;
 	}
 
 	public static JsonButton deserialize(JsonObject obj) {
