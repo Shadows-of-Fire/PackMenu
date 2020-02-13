@@ -18,7 +18,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import shadows.menu.atm.ATMMenuScreen;
 import shadows.menu.logo.Logo;
 import shadows.menu.reload.ButtonManager;
 import shadows.placebo.config.Configuration;
@@ -80,7 +79,7 @@ public class PackMenuClient {
 	@SubscribeEvent
 	public void hijackMenu(GuiOpenEvent e) {
 		if (e.getGui() != null && e.getGui().getClass() == MainMenuScreen.class) {
-			e.setGui(enableATMMenu ? new ATMMenuScreen() : new ExtendedMenuScreen());
+			e.setGui(new ExtendedMenuScreen());
 		}
 	}
 
