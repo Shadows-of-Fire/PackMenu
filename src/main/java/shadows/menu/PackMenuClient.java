@@ -28,8 +28,6 @@ public class PackMenuClient {
 	public static final File FOLDER_PACK = new File(FMLPaths.GAMEDIR.get().toFile(), "packmenu/resources");
 	public static final ButtonManager BUTTON_MANAGER = new ButtonManager();
 
-	public static boolean enableATMMenu = false;
-
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
 	public static boolean drawJavaEd = true;
@@ -85,7 +83,6 @@ public class PackMenuClient {
 
 	public static void loadConfig() {
 		Configuration cfg = new Configuration(PackMenu.MODID);
-		enableATMMenu = cfg.getBoolean("All The Mods Menu", "ATM", false, "If the custom ATM Menu is used.  All other config values are ignored when using this option.");
 		drawTitle = cfg.getBoolean("Draw Title", "general", true, "If the title (the giant minecraft text) is drawn.");
 		drawSplash = cfg.getBoolean("Draw Splash", "general", true, "If the splash text is drawn.");
 		drawJavaEd = cfg.getBoolean("Draw Java Edition", "general", true, "If the \"Java Edition\" text is drawn.");
