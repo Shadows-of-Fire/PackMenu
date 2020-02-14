@@ -146,20 +146,20 @@ public class JsonButton extends Button {
 	}
 
 	public static JsonButton deserialize(JsonObject obj) {
+		JsonElement x = obj.get("x");
+		JsonElement y = obj.get("y");
+		JsonElement width = obj.get("width");
+		JsonElement height = obj.get("height");
 		JsonElement tex = obj.get("texture");
 		JsonElement u = obj.get("u");
 		JsonElement v = obj.get("v");
 		JsonElement hoverU = obj.get("hoverU");
 		JsonElement hoverV = obj.get("hoverV");
-		JsonElement widgets = obj.get("widgets");
-		JsonElement x = obj.get("x");
-		JsonElement y = obj.get("y");
-		JsonElement width = obj.get("width");
-		JsonElement height = obj.get("height");
-		JsonElement langKey = obj.get("langKey");
-		JsonElement action = obj.get("action");
 		JsonElement texWidth = obj.get("texWidth");
 		JsonElement texHeight = obj.get("texHeight");
+		JsonElement widgets = obj.get("widgets");
+		JsonElement langKey = obj.get("langKey");
+		JsonElement action = obj.get("action");
 		JsonElement fontColor = obj.get("fontColor");
 		JsonElement hoverFontColor = obj.get("hoverFontColor");
 
