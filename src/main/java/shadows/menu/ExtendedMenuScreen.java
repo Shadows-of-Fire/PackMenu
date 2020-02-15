@@ -21,6 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.BrandingControl;
 import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import shadows.menu.slideshow.Slideshow;
 
 public class ExtendedMenuScreen extends MainMenuScreen {
 
@@ -60,9 +61,14 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.showFadeInAnimation ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
-		} else this.minecraft.getTextureManager().bindTexture(BACKGROUND);
+			blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		} else if (PackMenuClient.slideshow) {
+			Slideshow.render(this, partialTicks);
+		} else {
+			this.minecraft.getTextureManager().bindTexture(BACKGROUND);
+			blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		}
 
-		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float f1 = 1.0F;
 		int l = MathHelper.ceil(f1 * 255.0F) << 24;
 		if ((l & -67108864) != 0) {
