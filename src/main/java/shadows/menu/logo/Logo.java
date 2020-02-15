@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import shadows.menu.ExtendedMenuScreen;
+import shadows.menu.buttons.AnchorPoint;
 import shadows.placebo.config.Configuration;
 
 public class Logo {
@@ -29,7 +30,12 @@ public class Logo {
 	 */
 	protected final int texWidth, texHeight;
 
-	public Logo(int xOff, int yOff, int width, int height, int texWidth, int texHeight, ResourceLocation texture) {
+	/**
+	 * The source anchor for the logo.
+	 */
+	protected final AnchorPoint anchor;
+
+	public Logo(int xOff, int yOff, int width, int height, int texWidth, int texHeight, ResourceLocation texture, AnchorPoint anchor) {
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.width = width;
@@ -37,6 +43,7 @@ public class Logo {
 		this.texWidth = texWidth;
 		this.texHeight = texHeight;
 		this.texture = texture;
+		this.anchor = anchor;
 	}
 
 	public void draw(ExtendedMenuScreen screen) {
@@ -45,7 +52,7 @@ public class Logo {
 		RenderSystem.disableDepthTest();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1);
 		RenderSystem.pushMatrix();
-		RenderSystem.translatef(screen.width / 2, screen.height / 4, 0);
+		RenderSystem.translatef(anchor.getX(screen), anchor.getY(screen), 0);
 		RenderSystem.scaled((double) width / texWidth, (double) height / texHeight, 1);
 		Screen.blit(xOff, yOff, 0, 0, texWidth, texHeight, texWidth, texHeight);
 		RenderSystem.popMatrix();
@@ -61,8 +68,9 @@ public class Logo {
 		int height = cfg.getInt("Height", "logo", 0, 0, 500000, "The height of the logo.");
 		int texWidth = cfg.getInt("Texture Width", "logo", 0, 0, 500000, "The width of the logo's texture.");
 		int texHeight = cfg.getInt("Texture Height", "logo", 0, 0, 500000, "The height of the logo's texture.");
+		AnchorPoint anchor = AnchorPoint.valueOf(cfg.getString("Anchor Point", "logo", "DEFAULT_LOGO", "The anchor point of the logo.  The types of anchor points are available on the wiki."));
 		if (Strings.isBlank(tex)) return null;
-		return new Logo(xOff, yOff, width, height, texWidth, texHeight, new ResourceLocation(tex));
+		return new Logo(xOff, yOff, width, height, texWidth, texHeight, new ResourceLocation(tex), anchor);
 	}
 
 }

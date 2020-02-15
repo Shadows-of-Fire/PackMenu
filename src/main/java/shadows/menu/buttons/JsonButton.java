@@ -9,11 +9,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import shadows.menu.ExtendedMenuScreen;
 
 public class JsonButton extends Button {
 
@@ -47,6 +47,11 @@ public class JsonButton extends Button {
 	 */
 	protected final int fontColor, hoverFontColor;
 
+	/**
+	 * The anchor point of this button.
+	 */
+	protected AnchorPoint anchor = AnchorPoint.DEFAULT;
+
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
 		super(xPos, yPos, width, height, langKey, handler);
 		handler.setSource(this);
@@ -68,14 +73,19 @@ public class JsonButton extends Button {
 		return this;
 	}
 
+	public JsonButton anchor(AnchorPoint anchor) {
+		this.anchor = anchor;
+		return this;
+	}
+
 	public JsonButton usesWidgets(boolean widgets) {
 		this.usesWidgets = widgets;
 		return this;
 	}
 
-	public JsonButton setup(MainMenuScreen screen) {
-		this.x = this.xOff + screen.width / 2;
-		this.y = this.yOff + screen.height / 4 + 48;
+	public JsonButton setup(ExtendedMenuScreen screen) {
+		this.x = this.xOff + anchor.getX(screen);
+		this.y = this.yOff + anchor.getY(screen);
 		this.setMessage(I18n.format(langKey));
 		return this;
 	}
@@ -162,6 +172,7 @@ public class JsonButton extends Button {
 		JsonElement action = obj.get("action");
 		JsonElement fontColor = obj.get("fontColor");
 		JsonElement hoverFontColor = obj.get("hoverFontColor");
+		JsonElement anchor = obj.get("anchor");
 
 		ResourceLocation _tex = tex == null ? WIDGETS_LOCATION : new ResourceLocation(tex.getAsString());
 		int _u = get(u, 0), _v = get(v, 0), _hoverU = get(hoverU, 0), _hoverV = get(hoverV, 0);
@@ -171,8 +182,9 @@ public class JsonButton extends Button {
 		int _fontColor = get(fontColor, 16777215), _hoverFontColor = get(hoverFontColor, 10526880);
 		String display = langKey == null ? "" : I18n.format(langKey.getAsString());
 		ButtonAction act = ButtonAction.valueOf(action.getAsString().toUpperCase(Locale.ROOT));
+		AnchorPoint _anchor = anchor == null ? AnchorPoint.DEFAULT : AnchorPoint.valueOf(anchor.getAsString());
 		Object data = act.readData(obj);
-		return new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets);
+		return new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor);
 	}
 
 	private static int get(JsonElement e, int def) {
