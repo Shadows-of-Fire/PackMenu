@@ -179,7 +179,7 @@ public class JsonButton extends Button {
 		int _x = get(x, 0), _y = get(y, 0), _width = get(width, 0), _height = get(height, 0);
 		int _texWidth = get(texWidth, 256), _texHeight = get(texHeight, 256);
 		boolean _widgets = widgets == null ? _tex.toString().contains("widgets") : widgets.getAsBoolean();
-		int _fontColor = get(fontColor, 16777215), _hoverFontColor = get(hoverFontColor, 10526880);
+		int _fontColor = get(fontColor, 16777215), _hoverFontColor = get(hoverFontColor, 16777215);
 		String display = langKey == null ? "" : I18n.format(langKey.getAsString());
 		ButtonAction act = ButtonAction.valueOf(action.getAsString().toUpperCase(Locale.ROOT));
 		AnchorPoint _anchor = anchor == null ? AnchorPoint.DEFAULT : AnchorPoint.valueOf(anchor.getAsString());
