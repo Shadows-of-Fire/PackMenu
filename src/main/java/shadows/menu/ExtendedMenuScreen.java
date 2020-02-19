@@ -1,7 +1,6 @@
 package shadows.menu;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.AccessibilityScreen;
 import net.minecraft.client.gui.FontRenderer;
@@ -20,7 +19,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.BrandingControl;
-import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import net.minecraftforge.fml.client.gui.GuiModList;
 import shadows.menu.slideshow.Slideshow;
 
 public class ExtendedMenuScreen extends MainMenuScreen {
@@ -53,14 +52,15 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 		int xCoord = this.width / 2 - 137;
 
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
 		if (PackMenuClient.drawPanorama) {
 			float f = this.showFadeInAnimation ? (Util.milliTime() - this.firstRenderTime) / 1000.0F : 1.0F;
 			fill(0, 0, this.width, this.height, -1);
 			this.panorama.render(partialTicks, MathHelper.clamp(f, 0.0F, 1.0F));
 			this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY_TEXTURES);
-			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.showFadeInAnimation ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.showFadeInAnimation ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 			blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		} else if (PackMenuClient.slideshow) {
 			Slideshow.render(this, partialTicks);
@@ -74,7 +74,7 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 		if ((l & -67108864) != 0) {
 			if (PackMenuClient.drawTitle) {
 				this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, f1);
+				GlStateManager.color4f(1.0F, 1.0F, 1.0F, f1);
 				this.blit(PackMenuClient.title.x + xCoord + 0, PackMenuClient.title.y + 30, 0, 0, 155, 44);
 				this.blit(PackMenuClient.title.x + xCoord + 155, PackMenuClient.title.y + 30, 0, 45, 155, 44);
 			}
@@ -89,22 +89,22 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 				int x = PackMenuClient.forgeWarn.x;
 				int y = PackMenuClient.forgeWarn.y;
 				if (x != 0 || y != 0) {
-					RenderSystem.pushMatrix();
-					RenderSystem.translated(x, y, 0);
+					GlStateManager.pushMatrix();
+					GlStateManager.translated(x, y, 0);
 					ForgeHooksClient.renderMainMenu(this, this.font, this.width, this.height);
-					RenderSystem.popMatrix();
+					GlStateManager.popMatrix();
 				} else ForgeHooksClient.renderMainMenu(this, this.font, this.width, this.height);
 			}
 
 			if (this.splashText != null && PackMenuClient.drawSplash) {
-				RenderSystem.pushMatrix();
-				RenderSystem.translatef(PackMenuClient.splash.x + this.width / 2 + 90, PackMenuClient.splash.y + 70, 0);
-				RenderSystem.rotatef(PackMenuClient.splashRotation, 0.0F, 0.0F, 1.0F);
+				GlStateManager.pushMatrix();
+				GlStateManager.translatef(PackMenuClient.splash.x + this.width / 2 + 90, PackMenuClient.splash.y + 70, 0);
+				GlStateManager.rotatef(PackMenuClient.splashRotation, 0.0F, 0.0F, 1.0F);
 				float f2 = 1.8F - MathHelper.abs(MathHelper.sin(Util.milliTime() % 1000L / 1000.0F * ((float) Math.PI * 2F)) * 0.1F);
 				f2 = f2 * 100.0F / (this.font.getStringWidth(this.splashText) + 32);
-				RenderSystem.scalef(f2, f2, f2);
+				GlStateManager.scalef(f2, f2, f2);
 				this.drawCenteredString(this.font, this.splashText, 0, -8, PackMenuClient.splashColor);
-				RenderSystem.popMatrix();
+				GlStateManager.popMatrix();
 			}
 
 			String s = "Minecraft " + SharedConstants.getVersion().getName();
@@ -149,7 +149,7 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 		//Mods Button
 		this.addButton(new Button(buttonWidth - 100, buttonHeight + 24 * 2, 98, 20, I18n.format("fml.menu.mods"), button -> {
-			this.minecraft.displayGuiScreen(new ModListScreen(this));
+			this.minecraft.displayGuiScreen(new GuiModList(this));
 		}));
 
 		//Language Button

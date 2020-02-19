@@ -9,12 +9,12 @@ import net.minecraft.client.gui.screen.MultiplayerScreen;
 import net.minecraft.client.gui.screen.OptionsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.WorldSelectionScreen;
-import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import net.minecraftforge.fml.client.gui.GuiModList;
 
 public enum ScreenType implements Function<Screen, Screen> {
 	SINGLEPLAYER(WorldSelectionScreen::new),
 	MULTIPLAYER(MultiplayerScreen::new),
-	MODS(ModListScreen::new),
+	MODS(GuiModList::new),
 	LANGUAGE(
 			m -> new LanguageScreen(m, Minecraft.getInstance().gameSettings, Minecraft.getInstance().getLanguageManager())),
 	OPTIONS(m -> new OptionsScreen(m, Minecraft.getInstance().gameSettings)),

@@ -1,6 +1,6 @@
 package shadows.menu.slideshow;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -26,15 +26,15 @@ public class Slideshow {
 		Screen.blit(0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 		if (fading) {
-			RenderSystem.enableBlend();
+			GlStateManager.enableBlend();
 			mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(nextIndex()));
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
 			Screen.blit(0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
-			RenderSystem.disableBlend();
+			GlStateManager.disableBlend();
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 

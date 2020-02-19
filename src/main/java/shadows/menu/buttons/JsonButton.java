@@ -5,7 +5,6 @@ import java.util.Locale;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -112,11 +111,11 @@ public class JsonButton extends Button {
 		Minecraft minecraft = Minecraft.getInstance();
 		FontRenderer fontrenderer = minecraft.fontRenderer;
 		minecraft.getTextureManager().bindTexture(texture);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.alpha);
 		int i = this.getYImage(this.isHovered());
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableBlend();
+		GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		this.blit(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
 		this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(minecraft, mouseX, mouseY);
@@ -131,14 +130,14 @@ public class JsonButton extends Button {
 		Minecraft mc = Minecraft.getInstance();
 		this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 		mc.getTextureManager().bindTexture(this.texture);
-		RenderSystem.disableDepthTest();
+		GlStateManager.disableDepthTest();
 		int x = u, y = v;
 		if (this.isHovered()) {
 			x = hoverU;
 			y = hoverV;
 		}
 		blit(this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
-		RenderSystem.enableDepthTest();
+		GlStateManager.enableDepthTest();
 		int color = getFGColor();
 
 		String buttonText = this.getMessage();

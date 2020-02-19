@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.Strings;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -49,14 +49,14 @@ public class Logo {
 	public void draw(ExtendedMenuScreen screen) {
 		Minecraft mc = Minecraft.getInstance();
 		mc.getTextureManager().bindTexture(this.texture);
-		RenderSystem.disableDepthTest();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1);
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(anchor.getX(screen), anchor.getY(screen), 0);
-		RenderSystem.scaled((double) width / texWidth, (double) height / texHeight, 1);
+		GlStateManager.disableDepthTest();
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1);
+		GlStateManager.pushMatrix();
+		GlStateManager.translatef(anchor.getX(screen), anchor.getY(screen), 0);
+		GlStateManager.scaled((double) width / texWidth, (double) height / texHeight, 1);
 		Screen.blit(xOff, yOff, 0, 0, texWidth, texHeight, texWidth, texHeight);
-		RenderSystem.popMatrix();
-		RenderSystem.enableDepthTest();
+		GlStateManager.popMatrix();
+		GlStateManager.enableDepthTest();
 	}
 
 	@Nullable
