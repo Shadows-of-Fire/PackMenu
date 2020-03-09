@@ -163,8 +163,8 @@ public class JsonButton extends Button {
 			x = hoverU;
 			y = hoverV;
 		}
-		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		blit(this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
 		GlStateManager.enableDepthTest();
 		int color = getFGColor();
