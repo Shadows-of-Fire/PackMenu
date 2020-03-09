@@ -51,6 +51,16 @@ public class JsonButton extends Button {
 	 */
 	protected AnchorPoint anchor = AnchorPoint.DEFAULT;
 
+	/**
+	 * The offsets for the drawn text.
+	 */
+	protected int textXOff, textYOff;
+
+	/**
+	 * If the text on this button is drawn with a drop shadow.
+	 */
+	protected boolean dropShadow;
+
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
 		super(xPos, yPos, width, height, langKey, handler);
 		handler.setSource(this);
@@ -82,10 +92,21 @@ public class JsonButton extends Button {
 		return this;
 	}
 
+	public JsonButton textOffsets(int x, int y) {
+		this.textXOff = x;
+		this.textYOff = y;
+		return this;
+	}
+
 	public JsonButton setup(ExtendedMenuScreen screen) {
 		this.x = this.xOff + anchor.getX(screen);
 		this.y = this.yOff + anchor.getY(screen);
 		this.setMessage(I18n.format(langKey));
+		return this;
+	}
+
+	public JsonButton dropShadow(boolean dropShadow) {
+		this.dropShadow = dropShadow;
 		return this;
 	}
 
@@ -104,6 +125,12 @@ public class JsonButton extends Button {
 		font.drawString(string, x - font.getStringWidth(string) / 2, y, color);
 	}
 
+	@Override
+	public void drawCenteredString(FontRenderer font, String string, int x, int y, int color) {
+		if (dropShadow) super.drawCenteredString(font, string, x, y, color);
+		else drawCenteredStringNoShadow(font, string, x, y, color);
+	}
+
 	/**
 	 * Renders this button as if it was a default button based on the widgets texture (automatic scaling)
 	 */
@@ -120,7 +147,7 @@ public class JsonButton extends Button {
 		this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(minecraft, mouseX, mouseY);
 		int j = getFGColor();
-		this.drawCenteredString(fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		this.drawCenteredString(fontrenderer, this.getMessage(), this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 	}
 
 	/**
@@ -136,6 +163,8 @@ public class JsonButton extends Button {
 			x = hoverU;
 			y = hoverV;
 		}
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		blit(this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
 		GlStateManager.enableDepthTest();
 		int color = getFGColor();
@@ -146,7 +175,7 @@ public class JsonButton extends Button {
 
 		if (strWidth > width - 6 && strWidth > ellipsisWidth) buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
 
-		drawCenteredStringNoShadow(mc.fontRenderer, buttonText, this.x + this.width / 2 + 5, this.y + (this.height - 12) / 2, color);
+		drawCenteredString(mc.fontRenderer, buttonText, this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, color);
 	}
 
 	@Override
@@ -172,6 +201,9 @@ public class JsonButton extends Button {
 		JsonElement fontColor = obj.get("fontColor");
 		JsonElement hoverFontColor = obj.get("hoverFontColor");
 		JsonElement anchor = obj.get("anchor");
+		JsonElement textX = obj.get("textXOffset");
+		JsonElement textY = obj.get("textYOffset");
+		JsonElement dropShadow = obj.get("dropShadow");
 
 		ResourceLocation _tex = tex == null ? WIDGETS_LOCATION : new ResourceLocation(tex.getAsString());
 		int _u = get(u, 0), _v = get(v, 0), _hoverU = get(hoverU, 0), _hoverV = get(hoverV, 0);
@@ -183,7 +215,9 @@ public class JsonButton extends Button {
 		ButtonAction act = ButtonAction.valueOf(action.getAsString().toUpperCase(Locale.ROOT));
 		AnchorPoint _anchor = anchor == null ? AnchorPoint.DEFAULT : AnchorPoint.valueOf(anchor.getAsString());
 		Object data = act.readData(obj);
-		return new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor);
+		int _textX = get(textX, 0), _textY = get(textY, -4);
+		boolean _dropShadow = dropShadow == null ? true : dropShadow.getAsBoolean();
+		return new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor).textOffsets(_textX, _textY).dropShadow(_dropShadow);
 	}
 
 	private static int get(JsonElement e, int def) {
