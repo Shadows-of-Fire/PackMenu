@@ -50,6 +50,8 @@ public class Logo {
 		Minecraft mc = Minecraft.getInstance();
 		mc.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(anchor.getX(screen), anchor.getY(screen), 0);
