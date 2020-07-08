@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.profiler.IProfiler;
@@ -30,9 +30,9 @@ public class ButtonManager extends JsonReloadListener {
 	}
 
 	@Override
-	protected void apply(Map<ResourceLocation, JsonObject> objects, IResourceManager mgr, IProfiler profiler) {
+	protected void apply(Map<ResourceLocation, JsonElement> objects, IResourceManager mgr, IProfiler profiler) {
 		buttons.clear();
-		for (Entry<ResourceLocation, JsonObject> obj : objects.entrySet()) {
+		for (Entry<ResourceLocation, JsonElement> obj : objects.entrySet()) {
 			try {
 				JsonButton btn = GSON.fromJson(obj.getValue(), JsonButton.class);
 				buttons.put(obj.getKey(), btn);

@@ -1,5 +1,6 @@
 package shadows.menu.slideshow;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
@@ -20,17 +21,18 @@ public class Slideshow {
 	private static int index = 0;
 	private static boolean fading = false;
 
-	public static void render(ExtendedMenuScreen screen, float partialTicks) {
+	@SuppressWarnings("deprecation")
+	public static void render(ExtendedMenuScreen screen, MatrixStack stack, float partialTicks) {
 		Minecraft mc = screen.getMinecraft();
 		mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(index));
-		Screen.blit(0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 		if (fading) {
 			RenderSystem.enableBlend();
 			mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(nextIndex()));
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
-			Screen.blit(0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
+			Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 			RenderSystem.disableBlend();
 

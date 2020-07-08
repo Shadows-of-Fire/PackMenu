@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.Strings;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
@@ -46,16 +47,17 @@ public class Logo {
 		this.anchor = anchor;
 	}
 
-	public void draw(ExtendedMenuScreen screen) {
+	@SuppressWarnings("deprecation")
+	public void draw(ExtendedMenuScreen screen, MatrixStack stack) {
 		Minecraft mc = Minecraft.getInstance();
 		mc.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1);
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(anchor.getX(screen), anchor.getY(screen), 0);
-		RenderSystem.scaled((double) width / texWidth, (double) height / texHeight, 1);
-		Screen.blit(xOff, yOff, 0, 0, texWidth, texHeight, texWidth, texHeight);
-		RenderSystem.popMatrix();
+		stack.push();
+		stack.translate(anchor.getX(screen), anchor.getY(screen), 0);
+		stack.scale((float) width / texWidth, (float) height / texHeight, 1);
+		Screen.blit(stack, xOff, yOff, 0, 0, texWidth, texHeight, texWidth, texHeight);
+		stack.pop();
 		RenderSystem.enableDepthTest();
 	}
 

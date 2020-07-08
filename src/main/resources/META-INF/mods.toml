@@ -19,20 +19,20 @@ Adds the ability to change the background of the main menu, as well as edit some
 [[dependencies.packmenu]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[30,)" #mandatory
+    versionRange="[32,)" #mandatory
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.packmenu]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15,)"
+    versionRange="[1.16,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.packmenu]]
     modId="placebo"
     mandatory=true
-    versionRange="[3,)"
+    versionRange="[4.0.1,)"
     ordering="NONE"
     side="BOTH"
