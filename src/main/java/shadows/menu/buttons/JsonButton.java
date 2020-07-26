@@ -205,6 +205,7 @@ public class JsonButton extends Button {
 		JsonElement textX = obj.get("textXOffset");
 		JsonElement textY = obj.get("textYOffset");
 		JsonElement dropShadow = obj.get("dropShadow");
+		JsonElement active = obj.get("active");
 
 		ResourceLocation _tex = tex == null ? WIDGETS_LOCATION : new ResourceLocation(tex.getAsString());
 		int _u = get(u, 0), _v = get(v, 0), _hoverU = get(hoverU, 0), _hoverV = get(hoverV, 0);
@@ -218,7 +219,9 @@ public class JsonButton extends Button {
 		Object data = act.readData(obj);
 		int _textX = get(textX, 0), _textY = get(textY, -4);
 		boolean _dropShadow = dropShadow == null ? true : dropShadow.getAsBoolean();
-		return new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor).textOffsets(_textX, _textY).dropShadow(_dropShadow);
+		JsonButton button = new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor).textOffsets(_textX, _textY).dropShadow(_dropShadow);
+		button.active = active == null ? true : active.getAsBoolean();
+		return button;
 	}
 
 	private static int get(JsonElement e, int def) {

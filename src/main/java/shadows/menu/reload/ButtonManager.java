@@ -1,9 +1,9 @@
 package shadows.menu.reload;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +23,7 @@ public class ButtonManager extends JsonReloadListener {
 		return JsonButton.deserialize(json.getAsJsonObject());
 	}).setPrettyPrinting().create();
 
-	protected Map<ResourceLocation, JsonButton> buttons = new HashMap<>();
+	protected Map<ResourceLocation, JsonButton> buttons = new TreeMap<>();
 
 	public ButtonManager() {
 		super(GSON, "buttons");
