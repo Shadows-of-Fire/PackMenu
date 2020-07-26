@@ -11,7 +11,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 
-version = '2.0.0'
+version = '2.1.0'
 group = 'shadows.menu'
 archivesBaseName = 'PackMenu-1.16.1'
 
@@ -41,7 +41,7 @@ repositories {
         url "https://dvs1.progwml6.com/files/maven"
     }
 	maven {
-		url "http://tehnut.info/maven"
+		url "https://maven.tehnut.info"
 	}
 	maven { 
 		url 'https://maven.tterrag.com/' 

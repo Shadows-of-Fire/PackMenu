@@ -41,6 +41,8 @@ public enum ButtonAction {
 	}),
 	QUIT(ai -> { //Data: null
 		Minecraft.getInstance().shutdown();
+	}, j -> null),
+	NONE(ai -> {
 	}, j -> null);
 
 	private Consumer<ActionInstance> action;
