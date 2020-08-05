@@ -12,6 +12,8 @@ version="${file.jarVersion}" #mandatory
 
 displayName="Pack Menu" #mandatory
 
+license="MIT License" #mandatory
+
 description='''
 Adds the ability to change the background of the main menu, as well as edit some other menu-related things.
 '''

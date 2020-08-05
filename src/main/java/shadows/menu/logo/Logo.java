@@ -56,7 +56,7 @@ public class Logo {
 		stack.push();
 		stack.translate(anchor.getX(screen), anchor.getY(screen), 0);
 		stack.scale((float) width / texWidth, (float) height / texHeight, 1);
-		Screen.blit(stack, xOff, yOff, 0, 0, texWidth, texHeight, texWidth, texHeight);
+		Screen.drawTexture(stack, xOff, yOff, 0, 0, texWidth, texHeight, texWidth, texHeight);
 		stack.pop();
 		RenderSystem.enableDepthTest();
 	}

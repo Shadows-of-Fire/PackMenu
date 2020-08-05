@@ -25,14 +25,14 @@ public class Slideshow {
 	public static void render(ExtendedMenuScreen screen, MatrixStack stack, float partialTicks) {
 		Minecraft mc = screen.getMinecraft();
 		mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(index));
-		Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		Screen.drawTexture(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 		if (fading) {
 			RenderSystem.enableBlend();
 			mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(nextIndex()));
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
-			Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
+			Screen.drawTexture(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 			RenderSystem.disableBlend();
 
