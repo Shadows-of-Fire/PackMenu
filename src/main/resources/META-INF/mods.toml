@@ -4,6 +4,8 @@ loaderVersion="[28,)" #mandatory
 
 authors="Shadows_of_Fire" #optional
 
+license="MIT License" #mandatory
+
 [[mods]] #mandatory
 
 modId="packmenu" #mandatory
@@ -12,8 +14,6 @@ version="${file.jarVersion}" #mandatory
 
 displayName="Pack Menu" #mandatory
 
-license="MIT License" #mandatory
-
 description='''
 Adds the ability to change the background of the main menu, as well as edit some other menu-related things.
 '''
@@ -21,20 +21,20 @@ Adds the ability to change the background of the main menu, as well as edit some
 [[dependencies.packmenu]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[32,)" #mandatory
+    versionRange="[33.0.22,)" #mandatory
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.packmenu]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16,)"
+    versionRange="[1.16.2,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.packmenu]]
     modId="placebo"
     mandatory=true
-    versionRange="[4.0.1,)"
+    versionRange="[4.2,)"
     ordering="NONE"
     side="BOTH"

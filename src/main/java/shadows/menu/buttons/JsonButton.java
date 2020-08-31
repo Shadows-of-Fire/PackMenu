@@ -65,7 +65,7 @@ public class JsonButton extends Button {
 	protected boolean dropShadow;
 
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
-		super(xPos, yPos, width, height, new TranslationTextComponent(langKey), handler, Button.EMPTY);
+		super(xPos, yPos, width, height, new TranslationTextComponent(langKey), handler, Button.field_238486_s_);
 		handler.setSource(this);
 		this.xOff = xPos;
 		this.yOff = yPos;
@@ -125,11 +125,10 @@ public class JsonButton extends Button {
 	}
 
 	public static void drawCenteredStringNoShadow(MatrixStack stack, FontRenderer font, String string, int x, int y, int color) {
-		font.draw(stack, string, x - font.getStringWidth(string) / 2, y, color);
+		font.drawString(stack, string, x - font.getStringWidth(string) / 2, y, color);
 	}
 
-	@Override
-	public void drawCenteredString(MatrixStack stack, FontRenderer font, String string, int x, int y, int color) {
+	public void drawCenteredString0(MatrixStack stack, FontRenderer font, String string, int x, int y, int color) {
 		if (dropShadow) super.drawCenteredString(stack, font, string, x, y, color);
 		else drawCenteredStringNoShadow(stack, font, string, x, y, color);
 	}
@@ -147,11 +146,11 @@ public class JsonButton extends Button {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		this.drawTexture(stack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-		this.drawTexture(stack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+		this.blit(stack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+		this.blit(stack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(stack, minecraft, mouseX, mouseY);
 		int j = getFGColor();
-		this.drawCenteredText(stack, fontrenderer, this.getMessage(), this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
 	}
 
 	/**
@@ -159,7 +158,7 @@ public class JsonButton extends Button {
 	 */
 	private void renderImageButton(MatrixStack stack, int mouseX, int mouseY, float partial) {
 		Minecraft mc = Minecraft.getInstance();
-		this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+		this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 		mc.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
 		int x = u, y = v;
@@ -169,7 +168,7 @@ public class JsonButton extends Button {
 		}
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		drawTexture(stack, this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
+		blit(stack, this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
 		RenderSystem.enableDepthTest();
 		int color = getFGColor();
 
@@ -179,12 +178,12 @@ public class JsonButton extends Button {
 
 		//if (strWidth > width - 6 && strWidth > ellipsisWidth) buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
 
-		drawCenteredString(stack, mc.fontRenderer, buttonText, this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, color);
+		drawCenteredString0(stack, mc.fontRenderer, buttonText, this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, color);
 	}
 
 	@Override
 	public int getFGColor() {
-		return !this.hovered ? fontColor : hoverFontColor;
+		return !this.isHovered ? fontColor : hoverFontColor;
 	}
 
 	public static JsonButton deserialize(JsonObject obj) {
