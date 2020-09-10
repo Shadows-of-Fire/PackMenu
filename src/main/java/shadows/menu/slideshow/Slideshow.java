@@ -43,7 +43,7 @@ public class Slideshow {
 		if (e.phase == Phase.END && Minecraft.getInstance().currentScreen instanceof ExtendedMenuScreen) {
 			ticks++;
 			boolean wasFading = fading;
-			fading = (ticks % (PackMenuClient.slideshowDuration + PackMenuClient.slideshowTransition)) > PackMenuClient.slideshowDuration;
+			fading = (ticks % (PackMenuClient.slideshowDuration + PackMenuClient.slideshowTransition)) >= PackMenuClient.slideshowDuration;
 			if (wasFading && !fading) index = nextIndex();
 		}
 	}
