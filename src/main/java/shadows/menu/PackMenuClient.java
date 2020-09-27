@@ -114,7 +114,7 @@ public class PackMenuClient {
 
 		Minecraft.getInstance().getResourcePackList().addPackFinder(new IPackFinder() {
 			@Override
-			public void func_230230_a_(Consumer<ResourcePackInfo> map, IFactory factory) {
+			public void findPacks(Consumer<ResourcePackInfo> map, IFactory factory) {
 				final ResourcePackInfo packInfo = ResourcePackInfo.createResourcePack(PackMenu.MODID, true, () -> folderPack ? new FolderPack(FOLDER_PACK) : new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILTIN);
 				if (packInfo == null) {
 					PackMenu.LOGGER.error("Failed to load resource pack, some things may not work.");
