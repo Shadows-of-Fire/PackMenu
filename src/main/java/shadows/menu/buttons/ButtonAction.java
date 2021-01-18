@@ -10,7 +10,9 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConnectingScreen;
+import net.minecraft.client.gui.screen.MultiplayerScreen;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.util.Util;
 import shadows.menu.PackMenuClient;
 
@@ -18,8 +20,9 @@ import shadows.menu.PackMenuClient;
 public enum ButtonAction {
 	CONNECT_TO_SERVER(ai -> { //Data: Server IP (String)
 		Minecraft mc = Minecraft.getInstance();
-		mc.displayGuiScreen(new ConnectingScreen(mc.currentScreen, mc, (ServerData) ai.getData()));
-	}, j -> new ServerData("Minecraft Server", j.get("data").getAsString(), false)),
+		ServerData data = getOrCreateServerData((String) ai.getData());
+		mc.displayGuiScreen(new ConnectingScreen(mc.currentScreen, mc, data));
+	}, j -> j.get("data").getAsString()),
 	LOAD_WORLD(ai -> { //Data: World Name (String)
 
 	}, j -> j.get("data").getAsString()),
@@ -64,6 +67,20 @@ public enum ButtonAction {
 
 	public Object readData(JsonObject json) {
 		return reader.apply(json);
+	}
+
+	public static ServerData getOrCreateServerData(String ip) {
+		MultiplayerScreen scn = new MultiplayerScreen(Minecraft.getInstance().currentScreen);
+		scn.init(Minecraft.getInstance(), 0, 0);
+		ServerList list = scn.getServerList();
+		for (int i = 0; i < list.countServers(); i++) {
+			ServerData data = list.getServerData(i);
+			if (data.serverIP.equals(ip)) return data;
+		}
+		ServerData data = new ServerData("Packmenu Managed Server", ip, false);
+		list.addServerData(data);
+		list.saveServerList();
+		return data;
 	}
 
 }
