@@ -11,7 +11,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -64,6 +63,11 @@ public class JsonButton extends Button {
 	 */
 	protected boolean dropShadow;
 
+	/**
+	 * Button scaling factor.  Should be something that's reciprocal is an integer.
+	 */
+	protected float scaleX = 1F, scaleY = 1F;
+
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
 		super(xPos, yPos, width, height, new TranslationTextComponent(langKey), handler, Button.field_238486_s_);
 		handler.setSource(this);
@@ -110,6 +114,12 @@ public class JsonButton extends Button {
 
 	public JsonButton dropShadow(boolean dropShadow) {
 		this.dropShadow = dropShadow;
+		return this;
+	}
+
+	public JsonButton scale(float x, float y) {
+		this.scaleX = x;
+		this.scaleY = y;
 		return this;
 	}
 
@@ -168,7 +178,12 @@ public class JsonButton extends Button {
 		}
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		blit(stack, this.x, this.y, x, y, this.width, this.height, texWidth, texHeight);
+		int scaleXInv = (int) (1 / scaleX);
+		int scaleYInv = (int) (1 / scaleY);
+		stack.push();
+		stack.scale(scaleX, scaleY, 1);
+		blit(stack, this.x * scaleXInv, this.y * scaleYInv, x, y, this.width * scaleXInv, this.height * scaleYInv, texWidth, texHeight);
+		stack.pop();
 		RenderSystem.enableDepthTest();
 		int color = getFGColor();
 
@@ -208,6 +223,8 @@ public class JsonButton extends Button {
 		JsonElement textY = obj.get("textYOffset");
 		JsonElement dropShadow = obj.get("dropShadow");
 		JsonElement active = obj.get("active");
+		JsonElement scaleX = obj.get("scaleX");
+		JsonElement scaleY = obj.get("scaleY");
 
 		ResourceLocation _tex = tex == null ? WIDGETS_LOCATION : new ResourceLocation(tex.getAsString());
 		int _u = get(u, 0), _v = get(v, 0), _hoverU = get(hoverU, 0), _hoverV = get(hoverV, 0);
@@ -215,18 +232,25 @@ public class JsonButton extends Button {
 		int _texWidth = get(texWidth, 256), _texHeight = get(texHeight, 256);
 		boolean _widgets = widgets == null ? _tex.toString().contains("widgets") : widgets.getAsBoolean();
 		int _fontColor = get(fontColor, 16777215), _hoverFontColor = get(hoverFontColor, 16777215);
-		String display = langKey == null ? "" : I18n.format(langKey.getAsString());
+		String displayKey = langKey == null ? "" : langKey.getAsString();
 		ButtonAction act = ButtonAction.valueOf(action.getAsString().toUpperCase(Locale.ROOT));
 		AnchorPoint _anchor = anchor == null ? AnchorPoint.DEFAULT : AnchorPoint.valueOf(anchor.getAsString());
 		Object data = act.readData(obj);
 		int _textX = get(textX, 0), _textY = get(textY, -4);
+		float _scaleX = get(scaleX, 1F), _scaleY = get(scaleY, 1F);
 		boolean _dropShadow = dropShadow == null ? true : dropShadow.getAsBoolean();
-		JsonButton button = new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, display, new ActionInstance(act, data)).texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor).textOffsets(_textX, _textY).dropShadow(_dropShadow);
+		JsonButton button = new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, displayKey, new ActionInstance(act, data));
+		button.texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor);
+		button.textOffsets(_textX, _textY).dropShadow(_dropShadow).scale(_scaleX, _scaleY);
 		button.active = active == null ? true : active.getAsBoolean();
 		return button;
 	}
 
 	private static int get(JsonElement e, int def) {
 		return e == null ? def : e.getAsInt();
+	}
+
+	private static float get(JsonElement e, float def) {
+		return e == null ? def : e.getAsFloat();
 	}
 }
