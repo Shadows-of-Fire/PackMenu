@@ -28,6 +28,10 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 	public static final ResourceLocation BACKGROUND = new ResourceLocation(PackMenu.MODID, "textures/gui/background.png");
 
+	public ExtendedMenuScreen(boolean fade) {
+		super(fade);
+	}
+
 	@Override
 	protected void init() {
 		if (this.splashText == null) {
@@ -58,7 +62,7 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 		if (PackMenuClient.drawPanorama) {
 			float f = this.showFadeInAnimation ? (Util.milliTime() - this.firstRenderTime) / 1000.0F : 1.0F;
 			fill(stack, 0, 0, this.width, this.height, -1);
-			this.panorama.render(partialTicks, MathHelper.clamp(f, 0.0F, 1.0F));
+			this.panorama.render(partialTicks * PackMenuClient.panoramaSpeed, MathHelper.clamp(f, 0.0F, 1.0F));
 			this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY_TEXTURES);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);

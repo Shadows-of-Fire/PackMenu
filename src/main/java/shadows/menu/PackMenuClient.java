@@ -53,6 +53,8 @@ public class PackMenuClient {
 	public static int slideshowDuration = 200;
 	public static int slideshowTransition = 20;
 	public static boolean slideshow = false;
+	public static boolean panoramaFade = false;
+	public static float panoramaSpeed = 1;
 
 	public static Logo logo = null;
 
@@ -130,7 +132,7 @@ public class PackMenuClient {
 	@SubscribeEvent
 	public void hijackMenu(GuiOpenEvent e) {
 		if (e.getGui() != null && e.getGui().getClass() == MainMenuScreen.class) {
-			e.setGui(new ExtendedMenuScreen());
+			e.setGui(new ExtendedMenuScreen(panoramaFade));
 		}
 	}
 
@@ -160,6 +162,8 @@ public class PackMenuClient {
 		}
 		slideshowDuration = cfg.getInt("Duration", "slideshow", 200, 1, 1000000, "How long between slideshow transitions.");
 		slideshowTransition = cfg.getInt("Transition Duration", "slideshow", 20, 1, 1000000, "How long the slideshow transition lasts.");
+		panoramaFade = cfg.getBoolean("Panorama Fade In", "general", panoramaFade, "If the Panorama has a fade-in effect.");
+		panoramaSpeed = cfg.getFloat("Panorama Speed", "general", 1, 0.01F, 100F, "A multiplier on panorama speed.");
 		PackMenuClient.slideshow = !slideshowTextures.isEmpty();
 		Slideshow.reset();
 		if (cfg.hasChanged()) cfg.save();
