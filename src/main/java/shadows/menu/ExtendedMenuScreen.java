@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.WorldSelectionScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.realms.RealmsBridgeScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedConstants;
 import net.minecraft.util.Util;
@@ -149,8 +150,9 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 		}));
 
 		//Realms Button
-		this.addButton(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslationTextComponent("packmenu.realms"), (p_213095_1_) -> {
-
+		this.addButton(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslationTextComponent("menu.online"), (p_213095_1_) -> {
+		      RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
+		      realmsbridgescreen.func_231394_a_(this);
 		}));
 
 		//Mods Button

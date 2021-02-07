@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.ConnectingScreen;
 import net.minecraft.client.gui.screen.MultiplayerScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
+import net.minecraft.realms.RealmsBridgeScreen;
 import net.minecraft.util.Util;
 import shadows.menu.PackMenuClient;
 
@@ -26,6 +27,10 @@ public enum ButtonAction {
 	LOAD_WORLD(ai -> { //Data: World Name (String)
 
 	}, j -> j.get("data").getAsString()),
+	REALMS(ai -> {
+		RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
+	    realmsbridgescreen.func_231394_a_(Minecraft.getInstance().currentScreen);
+	}, j -> null),
 	RELOAD(ai -> { //Data: null
 		PackMenuClient.loadConfig();
 		Minecraft.getInstance().reloadResources();
