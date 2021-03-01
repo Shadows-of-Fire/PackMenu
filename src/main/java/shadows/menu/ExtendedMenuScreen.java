@@ -60,8 +60,6 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 			this.firstRenderTime = Util.milliTime();
 		}
 
-		int xCoord = this.width / 2 - 137;
-
 		if (PackMenuClient.drawPanorama) {
 			float f = this.showFadeInAnimation ? (Util.milliTime() - this.firstRenderTime) / 1000.0F : 1.0F;
 			fill(stack, 0, 0, this.width, this.height, -1);
@@ -84,19 +82,19 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 			if (PackMenuClient.drawTitle) {
 				this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, f1);
-				this.blit(stack, PackMenuClient.title.x + xCoord + 0, PackMenuClient.title.y + 30, 0, 0, 155, 44);
-				this.blit(stack, PackMenuClient.title.x + xCoord + 155, PackMenuClient.title.y + 30, 0, 45, 155, 44);
+				this.blit(stack, PackMenuClient.title.getX(this), PackMenuClient.title.getY(this), 0, 0, 155, 44);
+				this.blit(stack, PackMenuClient.title.getX(this) + 155, PackMenuClient.title.getY(this), 0, 45, 155, 44);
 			}
 
 			if (PackMenuClient.logo != null) PackMenuClient.logo.draw(this, stack);
 
 			this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_EDITION);
 
-			if (PackMenuClient.drawJavaEd) blit(stack, PackMenuClient.javaEd.x + xCoord + 88, PackMenuClient.javaEd.y + 67, 0.0F, 0.0F, 98, 14, 128, 16);
+			if (PackMenuClient.drawJavaEd) blit(stack, PackMenuClient.javaEd.getX(this), PackMenuClient.javaEd.getY(this), 0.0F, 0.0F, 98, 14, 128, 16);
 
 			if (PackMenuClient.drawForgeInfo) {
-				int x = PackMenuClient.forgeWarn.x;
-				int y = PackMenuClient.forgeWarn.y;
+				int x = PackMenuClient.forgeWarn.getX(this);
+				int y = PackMenuClient.forgeWarn.getY(this);
 				if (x != 0 || y != 0) {
 					stack.push();
 					stack.translate(x, y, 0);
@@ -107,7 +105,7 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 			if (this.splashText != null && PackMenuClient.drawSplash) {
 				RenderSystem.pushMatrix();
-				RenderSystem.translatef(PackMenuClient.splash.x + this.width / 2 + 90, PackMenuClient.splash.y + 70, 0);
+				RenderSystem.translatef(PackMenuClient.splash.getX(this), PackMenuClient.splash.getY(this), 0);
 				RenderSystem.rotatef(PackMenuClient.splashRotation, 0.0F, 0.0F, 1.0F);
 				float f2 = 1.8F - MathHelper.abs(MathHelper.sin(Util.milliTime() % 1000L / 1000.0F * ((float) Math.PI * 2F)) * 0.1F);
 				f2 = f2 * 100.0F / (getFont().getStringWidth(this.splashText) + 32);

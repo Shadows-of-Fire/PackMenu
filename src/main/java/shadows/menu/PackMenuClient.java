@@ -30,6 +30,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
+import shadows.menu.buttons.AnchorPoint;
 import shadows.menu.logo.Logo;
 import shadows.menu.panorama.VariedRenderSkyboxCube;
 import shadows.menu.reload.ButtonManager;
@@ -57,6 +58,7 @@ public class PackMenuClient {
 	public static boolean folderPack = false;
 	public static float splashRotation = -20.0F;
 	public static int splashColor = 16776960 | (255 << 24);
+	public static AnchorPoint splashAnchor = AnchorPoint.MIDDLE_CENTER;
 	public static List<ResourceLocation> slideshowTextures;
 	public static int slideshowDuration = 200;
 	public static int slideshowTransition = 20;
@@ -156,10 +158,10 @@ public class PackMenuClient {
 		drawJavaEd = cfg.getBoolean("Draw Java Edition", "general", true, "If the \"Java Edition\" text is drawn.");
 		drawForgeInfo = cfg.getBoolean("Draw Forge Info", "general", true, "If forge information is drawn at the top center.  This includes beta and update warnings.");
 		drawPanorama = cfg.getBoolean("Draw Panorama", "general", false, "If the vanilla panorama, and it's fade-in, are rendered.  Enabling this disables the use of the custom background options.");
-		title = getOffset("Title", cfg);
-		javaEd = getOffset("Java Edition Text", cfg);
-		forgeWarn = getOffset("Forge Info", cfg);
-		splash = getOffset("Splash Text", cfg);
+		title = getOffset("Title", AnchorPoint.TITLE, cfg);
+		javaEd = getOffset("Java Edition Text", AnchorPoint.JAVAED, cfg);
+		forgeWarn = getOffset("Forge Info", AnchorPoint.FORGE, cfg);
+		splash = getOffset("Splash Text", AnchorPoint.SPLASH, cfg);
 		splashRotation = cfg.getFloat("Rotation", "splash text", splashRotation, -360F, 360F, "The rotation value of the splash text.");
 		splashColor = cfg.getInt("Color", "splash text", splashColor, -Integer.MAX_VALUE, Integer.MAX_VALUE, "The color of the splash text.");
 		folderPack = cfg.getBoolean("Folder Pack", "general", true, "If the resource pack is loaded from /resources instead of /resources.zip");
@@ -183,19 +185,30 @@ public class PackMenuClient {
 		if (cfg.hasChanged()) cfg.save();
 	}
 
-	private static Offset getOffset(String key, Configuration cfg) {
+	private static Offset getOffset(String key, AnchorPoint def, Configuration cfg) {
+		AnchorPoint anchor = AnchorPoint.valueOf(cfg.getString("Anchor Point", key, def.toString(), "The anchor point for this element."));
 		int x = cfg.getInt("X Offset", key, 0, -1000, 1000, "The X offset for this element.");
 		int y = cfg.getInt("Y Offset", key, 0, -1000, 1000, "The Y Offset for this element.");
-		return new Offset(x, y);
+		return new Offset(anchor, x, y);
 	}
 
 	public static class Offset {
 
+		public final AnchorPoint anchor;
 		public final int x, y;
 
-		public Offset(int x, int y) {
+		public Offset(AnchorPoint anchor, int x, int y) {
+			this.anchor = anchor;
 			this.x = x;
 			this.y = y;
+		}
+
+		public int getX(ExtendedMenuScreen scn) {
+			return anchor.getX(scn) + x;
+		}
+
+		public int getY(ExtendedMenuScreen scn) {
+			return anchor.getY(scn) + y;
 		}
 
 	}
