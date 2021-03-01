@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -30,9 +31,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import shadows.menu.logo.Logo;
+import shadows.menu.panorama.VariedRenderSkyboxCube;
 import shadows.menu.reload.ButtonManager;
 import shadows.menu.slideshow.Slideshow;
 import shadows.placebo.config.Configuration;
+import shadows.placebo.util.RunnableReloader;
 
 public class PackMenuClient {
 
@@ -40,6 +43,11 @@ public class PackMenuClient {
 	public static final File FOLDER_PACK = new File(FMLPaths.GAMEDIR.get().toFile(), "packmenu/resources");
 	public static final ButtonManager BUTTON_MANAGER = new ButtonManager();
 
+	static {
+		MainMenuScreen.PANORAMA_RESOURCES = new VariedRenderSkyboxCube(new ResourceLocation("textures/gui/title/background/panorama"));
+	}
+
+	public static final VariedRenderSkyboxCube PANORAMA_RESOURCES = (VariedRenderSkyboxCube) MainMenuScreen.PANORAMA_RESOURCES;
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
 	public static boolean drawJavaEd = true;
@@ -55,6 +63,7 @@ public class PackMenuClient {
 	public static boolean slideshow = false;
 	public static boolean panoramaFade = false;
 	public static float panoramaSpeed = 1;
+	public static int panoramaVariations = 1;
 
 	public static Logo logo = null;
 
@@ -127,6 +136,10 @@ public class PackMenuClient {
 		});
 
 		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(BUTTON_MANAGER);
+		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(new RunnableReloader(() -> {
+			int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
+			PANORAMA_RESOURCES.setVariation(var);
+		}));
 	}
 
 	@SubscribeEvent
@@ -164,6 +177,7 @@ public class PackMenuClient {
 		slideshowTransition = cfg.getInt("Transition Duration", "slideshow", 20, 1, 1000000, "How long the slideshow transition lasts.");
 		panoramaFade = cfg.getBoolean("Panorama Fade In", "general", panoramaFade, "If the Panorama has a fade-in effect.");
 		panoramaSpeed = cfg.getFloat("Panorama Speed", "general", 1, 0.01F, 100F, "A multiplier on panorama speed.");
+		panoramaVariations = cfg.getInt("Panorama Variations", "general", panoramaVariations, 1, 10, "The number of variations of panorama that exist.  Panorama files other than the original set must have the form panorama<y>_<z>.png.  For example the first file of varation #2 would be panorama1_0.png");
 		PackMenuClient.slideshow = !slideshowTextures.isEmpty();
 		Slideshow.reset();
 		if (cfg.hasChanged()) cfg.save();

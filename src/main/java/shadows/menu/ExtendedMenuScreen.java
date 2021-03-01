@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.WorldSelectionScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.client.renderer.RenderSkybox;
 import net.minecraft.realms.RealmsBridgeScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedConstants;
@@ -28,6 +29,7 @@ import shadows.menu.slideshow.Slideshow;
 public class ExtendedMenuScreen extends MainMenuScreen {
 
 	public static final ResourceLocation BACKGROUND = new ResourceLocation(PackMenu.MODID, "textures/gui/background.png");
+	public final RenderSkybox panorama = new RenderSkybox(PANORAMA_RESOURCES);
 
 	public ExtendedMenuScreen(boolean fade) {
 		super(fade);
@@ -151,8 +153,8 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 		//Realms Button
 		this.addButton(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslationTextComponent("menu.online"), (p_213095_1_) -> {
-		      RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
-		      realmsbridgescreen.func_231394_a_(this);
+			RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
+			realmsbridgescreen.func_231394_a_(this);
 		}));
 
 		//Mods Button
