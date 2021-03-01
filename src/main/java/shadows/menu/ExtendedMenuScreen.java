@@ -24,6 +24,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.BrandingControl;
 import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import shadows.menu.buttons.JsonButton;
 import shadows.menu.slideshow.Slideshow;
 
 public class ExtendedMenuScreen extends MainMenuScreen {
@@ -131,6 +132,16 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 			drawString(stack, getFont(), "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, 16777215 | l);
 			if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height) {
 				fill(stack, this.widthCopyrightRest, this.height - 1, this.widthCopyrightRest + this.widthCopyright, this.height, 16777215 | l);
+			}
+		}
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		for (Widget b : this.buttons) {
+			if (b.isHovered() && b instanceof JsonButton) {
+				((JsonButton) b).tickScrollCounter();
 			}
 		}
 	}

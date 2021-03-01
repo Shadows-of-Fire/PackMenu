@@ -12,7 +12,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import shadows.menu.ExtendedMenuScreen;
 
@@ -67,6 +68,11 @@ public class JsonButton extends Button {
 	 * Button scaling factor.  Should be something that's reciprocal is an integer.
 	 */
 	protected float scaleX = 1F, scaleY = 1F;
+
+	/**
+	 * Ticked variable that allows for larger-than-width strings to rotate.
+	 */
+	protected int scrollCounter = 0;
 
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
 		super(xPos, yPos, width, height, new TranslationTextComponent(langKey), handler, Button.field_238486_s_);
@@ -148,9 +154,8 @@ public class JsonButton extends Button {
 	 */
 	@SuppressWarnings("deprecation")
 	private void renderWidgetButton(MatrixStack stack, int mouseX, int mouseY, float partial) {
-		Minecraft minecraft = Minecraft.getInstance();
-		FontRenderer fontrenderer = minecraft.fontRenderer;
-		minecraft.getTextureManager().bindTexture(texture);
+		Minecraft mc = Minecraft.getInstance();
+		mc.getTextureManager().bindTexture(texture);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
 		int i = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
@@ -158,9 +163,8 @@ public class JsonButton extends Button {
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		this.blit(stack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
 		this.blit(stack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-		this.renderBg(stack, minecraft, mouseX, mouseY);
-		int j = getFGColor();
-		drawCenteredString(stack, fontrenderer, this.getMessage(), this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		this.renderBg(stack, mc, mouseX, mouseY);
+		renderText(stack);
 	}
 
 	/**
@@ -185,15 +189,45 @@ public class JsonButton extends Button {
 		blit(stack, this.x * scaleXInv, this.y * scaleYInv, x, y, this.width * scaleXInv, this.height * scaleYInv, texWidth, texHeight);
 		stack.pop();
 		RenderSystem.enableDepthTest();
+		renderText(stack);
+	}
+
+	protected void renderText(MatrixStack stack) {
+		Minecraft mc = Minecraft.getInstance();
 		int color = getFGColor();
-
 		String buttonText = this.getMessage().getString();
-		//int strWidth = mc.fontRenderer.getStringWidth(buttonText);
-		//int ellipsisWidth = mc.fontRenderer.getStringWidth("...");
+		int strWidth = mc.fontRenderer.getStringWidth(buttonText);
+		if (strWidth <= this.width - 6) {
+			drawCenteredString0(stack, mc.fontRenderer, buttonText, this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, color);
+		} else if (!this.isHovered) {
+			this.scrollCounter = 0;
+			int ellipsisWidth = mc.fontRenderer.getStringWidth("...");
+			if (strWidth > ellipsisWidth) buttonText = trimStringToWidth(this.getMessage(), width - 6 - ellipsisWidth).getString().trim() + "...";
+			drawCenteredString0(stack, mc.fontRenderer, buttonText, this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, color);
+		} else {
+			int halfLen = mc.fontRenderer.getStringWidth(buttonText + "      ");
+			buttonText += "      " + buttonText;
+			stack.push();
+			double d0 = mc.getMainWindow().getGuiScaleFactor();
+			float y = (Minecraft.getInstance().currentScreen.height - this.y - this.height);
+			RenderSystem.enableScissor((int) (this.x * d0), (int) (y * d0), (int) (d0 * this.width), (int) (d0 * this.height));
+			stack.translate((-scrollCounter - mc.getTickLength()) % (halfLen), 0, 0);
+			if (dropShadow) {
+				mc.fontRenderer.drawStringWithShadow(stack, buttonText, this.x + this.width / 8 + textXOff, this.y + this.height / 2 + textYOff, color);
+			} else {
+				mc.fontRenderer.drawString(stack, buttonText, this.x + this.width / 8 + textXOff, this.y + this.height / 2 + textYOff, color);
+			}
+			RenderSystem.disableScissor();
+			stack.pop();
+		}
+	}
 
-		//if (strWidth > width - 6 && strWidth > ellipsisWidth) buttonText = mc.fontRenderer.trimStringToWidth(buttonText, width - 6 - ellipsisWidth).trim() + "...";
+	public void tickScrollCounter() {
+		this.scrollCounter++;
+	}
 
-		drawCenteredString0(stack, mc.fontRenderer, buttonText, this.x + this.width / 2 + textXOff, this.y + this.height / 2 + textYOff, color);
+	public ITextProperties trimStringToWidth(ITextProperties str, int width) {
+		return Minecraft.getInstance().fontRenderer.getCharacterManager().func_238362_b_(str, width, Style.EMPTY).get(0);
 	}
 
 	@Override
