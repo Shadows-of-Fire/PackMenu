@@ -182,11 +182,9 @@ public class JsonButton extends Button {
 		}
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		int scaleXInv = (int) (1 / scaleX);
-		int scaleYInv = (int) (1 / scaleY);
 		stack.push();
 		stack.scale(scaleX, scaleY, 1);
-		blit(stack, this.x * scaleXInv, this.y * scaleYInv, x, y, this.width * scaleXInv, this.height * scaleYInv, texWidth, texHeight);
+		blit(stack, Math.round(this.x / scaleX), Math.round(this.y / scaleY), x, y, Math.round(this.width / scaleX), Math.round(this.height / scaleY), texWidth, texHeight);
 		stack.pop();
 		RenderSystem.enableDepthTest();
 		renderText(stack);
