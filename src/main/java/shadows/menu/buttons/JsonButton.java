@@ -8,10 +8,12 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import joptsimple.internal.Strings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -42,7 +44,7 @@ public class JsonButton extends Button {
 	/**
 	 * The untranslated key of this button's text.  Cannot be translated at construction time as language hasn't loaded yet.
 	 */
-	protected final String langKey;
+	protected String langKey, hoverKey;
 
 	/**
 	 * The color of the text drawn on this button.
@@ -73,6 +75,11 @@ public class JsonButton extends Button {
 	 * Ticked variable that allows for larger-than-width strings to rotate.
 	 */
 	protected int scrollCounter = 0;
+
+	/**
+	 * The translated message instace for hover text.
+	 */
+	protected ITextComponent hoverMessage;
 
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
 		super(xPos, yPos, width, height, new TranslationTextComponent(langKey), handler, Button.field_238486_s_);
@@ -115,6 +122,7 @@ public class JsonButton extends Button {
 		this.x = this.xOff + anchor.getX(screen);
 		this.y = this.yOff + anchor.getY(screen);
 		this.setMessage(new TranslationTextComponent(langKey));
+		this.hoverMessage = new TranslationTextComponent(hoverKey);
 		return this;
 	}
 
@@ -127,6 +135,19 @@ public class JsonButton extends Button {
 		this.scaleX = x;
 		this.scaleY = y;
 		return this;
+	}
+
+	public JsonButton hoverText(String hoverKey) {
+		if (Strings.isNullOrEmpty(hoverKey)) {
+			this.hoverKey = this.langKey;
+		} else this.hoverKey = hoverKey;
+		return this;
+	}
+
+	@Override
+	public ITextComponent getMessage() {
+		if (this.isHovered) return hoverMessage;
+		return super.getMessage();
 	}
 
 	/**
@@ -247,6 +268,7 @@ public class JsonButton extends Button {
 		JsonElement texHeight = obj.get("texHeight");
 		JsonElement widgets = obj.get("widgets");
 		JsonElement langKey = obj.get("langKey");
+		JsonElement hoverLangKey = obj.get("hoverLangKey");
 		JsonElement action = obj.get("action");
 		JsonElement fontColor = obj.get("fontColor");
 		JsonElement hoverFontColor = obj.get("hoverFontColor");
@@ -265,6 +287,7 @@ public class JsonButton extends Button {
 		boolean _widgets = widgets == null ? _tex.toString().contains("widgets") : widgets.getAsBoolean();
 		int _fontColor = get(fontColor, 16777215), _hoverFontColor = get(hoverFontColor, 16777215);
 		String displayKey = langKey == null ? "" : langKey.getAsString();
+		String hoverKey = hoverLangKey == null ? "" : hoverLangKey.getAsString();
 		ButtonAction act = ButtonAction.valueOf(action.getAsString().toUpperCase(Locale.ROOT));
 		AnchorPoint _anchor = anchor == null ? AnchorPoint.DEFAULT : AnchorPoint.valueOf(anchor.getAsString());
 		Object data = act.readData(obj);
@@ -273,7 +296,7 @@ public class JsonButton extends Button {
 		boolean _dropShadow = dropShadow == null ? true : dropShadow.getAsBoolean();
 		JsonButton button = new JsonButton(_x, _y, _width, _height, _fontColor, _hoverFontColor, displayKey, new ActionInstance(act, data));
 		button.texture(_tex, _u, _v, _hoverU, _hoverV, _texWidth, _texHeight).usesWidgets(_widgets).anchor(_anchor);
-		button.textOffsets(_textX, _textY).dropShadow(_dropShadow).scale(_scaleX, _scaleY);
+		button.textOffsets(_textX, _textY).dropShadow(_dropShadow).scale(_scaleX, _scaleY).hoverText(hoverKey);
 		button.active = active == null ? true : active.getAsBoolean();
 		return button;
 	}
