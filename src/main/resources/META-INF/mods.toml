@@ -23,14 +23,14 @@ Adds the ability to change the background of the main menu, as well as edit some
     mandatory=true #mandatory
     versionRange="[35.1.36,)" #mandatory
     ordering="NONE"
-    side="BOTH"
+    side="CLIENT"
 
 [[dependencies.packmenu]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.16.4,)"
     ordering="NONE"
-    side="BOTH"
+    side="CLIENT"
 
 [[dependencies.packmenu]]
     modId="placebo"
