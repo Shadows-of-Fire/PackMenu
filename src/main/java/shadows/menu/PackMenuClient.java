@@ -34,6 +34,7 @@ import shadows.menu.buttons.AnchorPoint;
 import shadows.menu.logo.Logo;
 import shadows.menu.panorama.VariedRenderSkyboxCube;
 import shadows.menu.reload.ButtonManager;
+import shadows.menu.reload.Supporters;
 import shadows.menu.slideshow.Slideshow;
 import shadows.placebo.config.Configuration;
 import shadows.placebo.util.RunnableReloader;
@@ -45,10 +46,10 @@ public class PackMenuClient {
 	public static final ButtonManager BUTTON_MANAGER = new ButtonManager();
 
 	static {
-		MainMenuScreen.PANORAMA_RESOURCES = new VariedRenderSkyboxCube(new ResourceLocation("textures/gui/title/background/panorama"));
+		MainMenuScreen.CUBE_MAP = new VariedRenderSkyboxCube(new ResourceLocation("textures/gui/title/background/panorama"));
 	}
 
-	public static final VariedRenderSkyboxCube PANORAMA_RESOURCES = (VariedRenderSkyboxCube) MainMenuScreen.PANORAMA_RESOURCES;
+	public static final VariedRenderSkyboxCube PANORAMA_RESOURCES = (VariedRenderSkyboxCube) MainMenuScreen.CUBE_MAP;
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
 	public static boolean drawJavaEd = true;
@@ -66,6 +67,7 @@ public class PackMenuClient {
 	public static boolean panoramaFade = false;
 	public static float panoramaSpeed = 1;
 	public static int panoramaVariations = 1;
+	public static String patreonUrl = "https://www.patreon.com/Shadows_of_Fire?fan_landing=true";
 
 	public static Logo logo = null;
 
@@ -125,10 +127,10 @@ public class PackMenuClient {
 			}
 		}
 
-		Minecraft.getInstance().getResourcePackList().addPackFinder(new IPackFinder() {
+		Minecraft.getInstance().getResourcePackRepository().addPackFinder(new IPackFinder() {
 			@Override
-			public void findPacks(Consumer<ResourcePackInfo> map, IFactory factory) {
-				final ResourcePackInfo packInfo = ResourcePackInfo.createResourcePack(PackMenu.MODID, true, () -> folderPack ? new FolderPack(FOLDER_PACK) : new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILTIN);
+			public void loadPacks(Consumer<ResourcePackInfo> map, IFactory factory) {
+				final ResourcePackInfo packInfo = ResourcePackInfo.create(PackMenu.MODID, true, () -> folderPack ? new FolderPack(FOLDER_PACK) : new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILT_IN);
 				if (packInfo == null) {
 					PackMenu.LOGGER.error("Failed to load resource pack, some things may not work.");
 					return;
@@ -137,11 +139,12 @@ public class PackMenuClient {
 			}
 		});
 
-		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(BUTTON_MANAGER);
-		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).addReloadListener(new RunnableReloader(() -> {
+		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(BUTTON_MANAGER);
+		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new RunnableReloader(() -> {
 			int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
 			PANORAMA_RESOURCES.setVariation(var);
 		}));
+		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(Supporters.INSTANCE);
 	}
 
 	@SubscribeEvent
@@ -182,6 +185,7 @@ public class PackMenuClient {
 		panoramaVariations = cfg.getInt("Panorama Variations", "general", panoramaVariations, 1, 10, "The number of variations of panorama that exist.  Panorama files other than the original set must have the form panorama<y>_<z>.png.  For example the first file of varation #2 would be panorama1_0.png");
 		PackMenuClient.slideshow = !slideshowTextures.isEmpty();
 		Slideshow.reset();
+		patreonUrl = cfg.getString("Patreon Url", "support", patreonUrl, "The URL that the link on the supporters page goes to.");
 		if (cfg.hasChanged()) cfg.save();
 	}
 

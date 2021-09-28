@@ -24,12 +24,12 @@ public class Slideshow {
 	@SuppressWarnings("deprecation")
 	public static void render(ExtendedMenuScreen screen, MatrixStack stack, float partialTicks) {
 		Minecraft mc = screen.getMinecraft();
-		mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(index));
+		mc.getTextureManager().bind(PackMenuClient.slideshowTextures.get(index));
 		Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 		if (fading) {
 			RenderSystem.enableBlend();
-			mc.getTextureManager().bindTexture(PackMenuClient.slideshowTextures.get(nextIndex()));
+			mc.getTextureManager().bind(PackMenuClient.slideshowTextures.get(nextIndex()));
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
 			Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
@@ -42,7 +42,7 @@ public class Slideshow {
 
 	@SubscribeEvent
 	public static void tick(ClientTickEvent e) {
-		if (e.phase == Phase.END && Minecraft.getInstance().currentScreen instanceof ExtendedMenuScreen) {
+		if (e.phase == Phase.END && Minecraft.getInstance().screen instanceof ExtendedMenuScreen) {
 			ticks++;
 			boolean wasFading = fading;
 			fading = (ticks % (PackMenuClient.slideshowDuration + PackMenuClient.slideshowTransition)) >= PackMenuClient.slideshowDuration;

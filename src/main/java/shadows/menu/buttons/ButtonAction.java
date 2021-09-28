@@ -22,24 +22,24 @@ public enum ButtonAction {
 	CONNECT_TO_SERVER(ai -> { //Data: Server IP (String)
 		Minecraft mc = Minecraft.getInstance();
 		ServerData data = getOrCreateServerData((String) ai.getData());
-		mc.displayGuiScreen(new ConnectingScreen(mc.currentScreen, mc, data));
+		mc.setScreen(new ConnectingScreen(mc.screen, mc, data));
 	}, j -> j.get("data").getAsString()),
 	LOAD_WORLD(ai -> { //Data: World Name (String)
 
 	}, j -> j.get("data").getAsString()),
 	REALMS(ai -> {
 		RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
-	    realmsbridgescreen.func_231394_a_(Minecraft.getInstance().currentScreen);
+	    realmsbridgescreen.switchToRealms(Minecraft.getInstance().screen);
 	}, j -> null),
 	RELOAD(ai -> { //Data: null
 		PackMenuClient.loadConfig();
-		Minecraft.getInstance().reloadResources();
+		Minecraft.getInstance().reloadResourcePacks();
 	}, j -> null),
 	OPEN_GUI(ai -> { //Data: ScreenType (String)
-		Minecraft.getInstance().displayGuiScreen(((ScreenType) ai.getData()).apply(Minecraft.getInstance().currentScreen));
+		Minecraft.getInstance().setScreen(((ScreenType) ai.getData()).apply(Minecraft.getInstance().screen));
 	}, j -> ScreenType.valueOf(j.get("data").getAsString().toUpperCase(Locale.ROOT))),
 	OPEN_URL(ai -> { //Data: Link (URI)
-		Util.getOSType().openURI((URI) ai.getData());
+		Util.getPlatform().openUri((URI) ai.getData());
 	}, j -> {
 		try {
 			return new URI(j.get("data").getAsString());
@@ -48,7 +48,7 @@ public enum ButtonAction {
 		}
 	}),
 	QUIT(ai -> { //Data: null
-		Minecraft.getInstance().shutdown();
+		Minecraft.getInstance().stop();
 	}, j -> null),
 	NONE(ai -> {
 	}, j -> null);
@@ -75,16 +75,16 @@ public enum ButtonAction {
 	}
 
 	public static ServerData getOrCreateServerData(String ip) {
-		MultiplayerScreen scn = new MultiplayerScreen(Minecraft.getInstance().currentScreen);
+		MultiplayerScreen scn = new MultiplayerScreen(Minecraft.getInstance().screen);
 		scn.init(Minecraft.getInstance(), 0, 0);
-		ServerList list = scn.getServerList();
-		for (int i = 0; i < list.countServers(); i++) {
-			ServerData data = list.getServerData(i);
-			if (data.serverIP.equals(ip)) return data;
+		ServerList list = scn.getServers();
+		for (int i = 0; i < list.size(); i++) {
+			ServerData data = list.get(i);
+			if (data.ip.equals(ip)) return data;
 		}
 		ServerData data = new ServerData("Packmenu Managed Server", ip, false);
-		list.addServerData(data);
-		list.saveServerList();
+		list.add(data);
+		list.save();
 		return data;
 	}
 

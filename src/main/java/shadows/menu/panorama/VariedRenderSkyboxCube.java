@@ -27,15 +27,15 @@ public class VariedRenderSkyboxCube extends RenderSkyboxCube {
 	}
 
 	public void setVariation(int variation) {
-		super.locations = this.locations[variation];
+		super.images = this.locations[variation];
 	}
 
-	public CompletableFuture<Void> loadAsync(TextureManager texMngr, Executor backgroundExecutor) {
+	public CompletableFuture<Void> preload(TextureManager texMngr, Executor backgroundExecutor) {
 		CompletableFuture<?>[] completablefuture = new CompletableFuture[PackMenuClient.panoramaVariations * 6];
 
 		for (int i = 0; i < PackMenuClient.panoramaVariations; i++) {
 			for (int j = 0; j < 6; j++) {
-				completablefuture[i * 6 + j] = texMngr.loadAsync(this.locations[i][j], backgroundExecutor);
+				completablefuture[i * 6 + j] = texMngr.preload(this.locations[i][j], backgroundExecutor);
 			}
 		}
 

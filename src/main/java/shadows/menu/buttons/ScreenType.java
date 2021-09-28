@@ -12,16 +12,18 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.WorldSelectionScreen;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import shadows.menu.gui.SupporterScreen;
 
 public enum ScreenType implements Function<Screen, Screen> {
 	SINGLEPLAYER(WorldSelectionScreen::new),
 	MULTIPLAYER(MultiplayerScreen::new),
 	MODS(ModListScreen::new),
 	LANGUAGE(
-			m -> new LanguageScreen(m, Minecraft.getInstance().gameSettings, Minecraft.getInstance().getLanguageManager())),
-	OPTIONS(m -> new OptionsScreen(m, Minecraft.getInstance().gameSettings)),
-	ACCESSIBILITY(m -> new AccessibilityScreen(m, Minecraft.getInstance().gameSettings)),
-	RESOURCE_PACKS(new RPScreenFunction());
+			m -> new LanguageScreen(m, Minecraft.getInstance().options, Minecraft.getInstance().getLanguageManager())),
+	OPTIONS(m -> new OptionsScreen(m, Minecraft.getInstance().options)),
+	ACCESSIBILITY(m -> new AccessibilityScreen(m, Minecraft.getInstance().options)),
+	RESOURCE_PACKS(new RPScreenFunction()),
+	SUPPORTERS(SupporterScreen::new);
 
 	protected Function<Screen, Screen> supplier;
 
@@ -39,9 +41,9 @@ public enum ScreenType implements Function<Screen, Screen> {
 		@Override
 		public PackScreen apply(Screen t) {
 			Minecraft mc = Minecraft.getInstance();
-			OptionsScreen optScn = new OptionsScreen(t, mc.gameSettings);
+			OptionsScreen optScn = new OptionsScreen(t, mc.options);
 			optScn.init(mc, 40, 40);
-			return new PackScreen(t, mc.getResourcePackList(), optScn::func_241584_a_, mc.getFileResourcePacks(), new TranslationTextComponent("resourcePack.title"));
+			return new PackScreen(t, mc.getResourcePackRepository(), optScn::updatePackList, mc.getResourcePackDirectory(), new TranslationTextComponent("resourcePack.title"));
 		}
 
 	}
