@@ -16,16 +16,16 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.IOUtils;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.MainMenuScreen;
-import net.minecraft.resources.FilePack;
-import net.minecraft.resources.FolderPack;
-import net.minecraft.resources.IPackFinder;
-import net.minecraft.resources.IPackNameDecorator;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.ResourcePackInfo;
-import net.minecraft.resources.ResourcePackInfo.IFactory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ResourceLocationException;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.FolderPackResources;
+import net.minecraft.server.packs.repository.RepositorySource;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.Pack.PackConstructor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ResourceLocationException;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -46,10 +46,10 @@ public class PackMenuClient {
 	public static final ButtonManager BUTTON_MANAGER = new ButtonManager();
 
 	static {
-		MainMenuScreen.CUBE_MAP = new VariedRenderSkyboxCube(new ResourceLocation("textures/gui/title/background/panorama"));
+		TitleScreen.CUBE_MAP = new VariedRenderSkyboxCube(new ResourceLocation("textures/gui/title/background/panorama"));
 	}
 
-	public static final VariedRenderSkyboxCube PANORAMA_RESOURCES = (VariedRenderSkyboxCube) MainMenuScreen.CUBE_MAP;
+	public static final VariedRenderSkyboxCube PANORAMA_RESOURCES = (VariedRenderSkyboxCube) TitleScreen.CUBE_MAP;
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
 	public static boolean drawJavaEd = true;
@@ -127,10 +127,10 @@ public class PackMenuClient {
 			}
 		}
 
-		Minecraft.getInstance().getResourcePackRepository().addPackFinder(new IPackFinder() {
+		Minecraft.getInstance().getResourcePackRepository().addPackFinder(new RepositorySource() {
 			@Override
-			public void loadPacks(Consumer<ResourcePackInfo> map, IFactory factory) {
-				final ResourcePackInfo packInfo = ResourcePackInfo.create(PackMenu.MODID, true, () -> folderPack ? new FolderPack(FOLDER_PACK) : new FilePack(RESOURCE_PACK), factory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.BUILT_IN);
+			public void loadPacks(Consumer<Pack> map, PackConstructor factory) {
+				final Pack packInfo = Pack.create(PackMenu.MODID, true, () -> folderPack ? new FolderPackResources(FOLDER_PACK) : new FilePackResources(RESOURCE_PACK), factory, Pack.Position.TOP, PackSource.BUILT_IN);
 				if (packInfo == null) {
 					PackMenu.LOGGER.error("Failed to load resource pack, some things may not work.");
 					return;
@@ -139,17 +139,17 @@ public class PackMenuClient {
 			}
 		});
 
-		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(BUTTON_MANAGER);
-		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new RunnableReloader(() -> {
+		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(BUTTON_MANAGER);
+		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new RunnableReloader(() -> {
 			int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
 			PANORAMA_RESOURCES.setVariation(var);
 		}));
-		((IReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(Supporters.INSTANCE);
+		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(Supporters.INSTANCE);
 	}
 
 	@SubscribeEvent
 	public void hijackMenu(GuiOpenEvent e) {
-		if (e.getGui() != null && e.getGui().getClass() == MainMenuScreen.class) {
+		if (e.getGui() != null && e.getGui().getClass() == TitleScreen.class) {
 			e.setGui(new ExtendedMenuScreen(panoramaFade));
 		}
 	}

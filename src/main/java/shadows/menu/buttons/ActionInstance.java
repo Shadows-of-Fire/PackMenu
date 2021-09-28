@@ -2,10 +2,10 @@ package shadows.menu.buttons;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.button.Button.IPressable;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Button.OnPress;
 
-public class ActionInstance implements IPressable {
+public class ActionInstance implements OnPress {
 
 	protected Button source;
 	protected ButtonAction action;

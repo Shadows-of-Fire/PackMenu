@@ -1,36 +1,41 @@
 package shadows.menu;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import com.mojang.realmsclient.RealmsMainScreen;
 
-import net.minecraft.client.gui.AccessibilityScreen;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.LanguageScreen;
-import net.minecraft.client.gui.screen.MainMenuScreen;
-import net.minecraft.client.gui.screen.MultiplayerScreen;
-import net.minecraft.client.gui.screen.OptionsScreen;
-import net.minecraft.client.gui.screen.WorldSelectionScreen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.gui.widget.button.ImageButton;
-import net.minecraft.client.renderer.RenderSkybox;
-import net.minecraft.realms.RealmsBridgeScreen;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SharedConstants;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.SharedConstants;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.screens.AccessibilityOptionsScreen;
+import net.minecraft.client.gui.screens.LanguageSelectScreen;
+import net.minecraft.client.gui.screens.OptionsScreen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.PanoramaRenderer;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.fml.BrandingControl;
-import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
+import net.minecraftforge.fmllegacy.BrandingControl;
 import shadows.menu.buttons.JsonButton;
 import shadows.menu.slideshow.Slideshow;
 
-public class ExtendedMenuScreen extends MainMenuScreen {
+public class ExtendedMenuScreen extends TitleScreen {
 
 	public static final ResourceLocation BACKGROUND = new ResourceLocation(PackMenu.MODID, "textures/gui/background.png");
-	public final RenderSkybox panorama = new RenderSkybox(CUBE_MAP);
+	public final PanoramaRenderer panorama = new PanoramaRenderer(CUBE_MAP);
 
 	public ExtendedMenuScreen(boolean fade) {
 		super(fade);
@@ -38,17 +43,14 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 	@Override
 	protected void init() {
-		if (this.splash == null) {
-			this.splash = this.minecraft.getSplashManager().getSplash();
-		}
-
-		this.copyrightWidth = this.font.width("Copyright Mojang AB. Do not distribute!");
-		this.copyrightX = this.width - this.copyrightWidth - 2;
-
+		super.init();
+		this.renderables.clear();
+		this.children().clear();
+		//this.narratables.clear();
 		if (PackMenuClient.BUTTON_MANAGER.getButtons().isEmpty()) {
 			addDefaultButtons();
 		} else PackMenuClient.BUTTON_MANAGER.getButtons().forEach(b -> {
-			this.addButton(b).setup(this);
+			this.addRenderableWidget(b).setup(this);
 		});
 
 		this.minecraft.setConnectedToRealms(false);
@@ -56,74 +58,82 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
 		if (this.fadeInStart == 0L && this.fading) {
 			this.fadeInStart = Util.getMillis();
 		}
 
+		float f = this.fading ? (Util.getMillis() - this.fadeInStart) / 1000.0F : 1.0F;
 		if (PackMenuClient.drawPanorama) {
-			float f = this.fading ? (Util.getMillis() - this.fadeInStart) / 1000.0F : 1.0F;
-			fill(stack, 0, 0, this.width, this.height, -1);
-			this.panorama.render(partialTicks * PackMenuClient.panoramaSpeed, MathHelper.clamp(f, 0.0F, 1.0F));
-			this.minecraft.getTextureManager().bind(PANORAMA_OVERLAY);
+			this.panorama.render(partialTicks * PackMenuClient.panoramaSpeed, Mth.clamp(f, 0.0F, 1.0F));
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.fading ? (float) MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.fading ? (float) Mth.ceil(Mth.clamp(f, 0.0F, 1.0F)) : 1.0F);
 			blit(stack, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		} else if (PackMenuClient.slideshow) {
 			Slideshow.render(this, stack, partialTicks);
 		} else {
-			this.minecraft.getTextureManager().bind(BACKGROUND);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShaderTexture(0, BACKGROUND);
 			blit(stack, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		}
 
-		float f1 = 1.0F;
-		int l = MathHelper.ceil(f1 * 255.0F) << 24;
+		float f1 = this.fading ? Mth.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
+		int l = Mth.ceil(f1 * 255.0F) << 24;
 		if ((l & -67108864) != 0) {
 			if (PackMenuClient.drawTitle) {
-				this.minecraft.getTextureManager().bind(MINECRAFT_LOGO);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, f1);
-				this.blit(stack, PackMenuClient.title.getX(this), PackMenuClient.title.getY(this), 0, 0, 155, 44);
-				this.blit(stack, PackMenuClient.title.getX(this) + 155, PackMenuClient.title.getY(this), 0, 45, 155, 44);
+				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShaderTexture(0, MINECRAFT_LOGO);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f1);
+				this.blitOutlineBlack(PackMenuClient.title.getX(this), PackMenuClient.title.getY(this), (x, y) -> {
+					this.blit(stack, x, y, 0, 0, 155, 44);
+					this.blit(stack, x + 155, y, 0, 45, 155, 44);
+				});
 			}
 
 			if (PackMenuClient.logo != null) PackMenuClient.logo.draw(this, stack);
 
-			this.minecraft.getTextureManager().bind(MINECRAFT_EDITION);
+			RenderSystem.setShaderTexture(0, MINECRAFT_EDITION);
 
 			if (PackMenuClient.drawJavaEd) blit(stack, PackMenuClient.javaEd.getX(this), PackMenuClient.javaEd.getY(this), 0.0F, 0.0F, 98, 14, 128, 16);
 
 			if (PackMenuClient.drawForgeInfo) {
+				int alpha = (this.fading ? Mth.ceil(Mth.clamp(f, 0.0F, 1.0F)) : 1) << 24;
 				int x = PackMenuClient.forgeWarn.getX(this);
 				int y = PackMenuClient.forgeWarn.getY(this);
 				if (x != 0 || y != 0) {
 					stack.pushPose();
 					stack.translate(x, y, 0);
-					ForgeHooksClient.renderMainMenu(this, stack, getFont(), this.width, this.height);
+					ForgeHooksClient.renderMainMenu(this, stack, getFont(), this.width, this.height, alpha);
 					stack.popPose();
-				} else ForgeHooksClient.renderMainMenu(this, stack, getFont(), this.width, this.height);
+				} else ForgeHooksClient.renderMainMenu(this, stack, getFont(), this.width, this.height, alpha);
 			}
 
 			if (this.splash != null && PackMenuClient.drawSplash) {
-				RenderSystem.pushMatrix();
-				RenderSystem.translatef(PackMenuClient.splash.getX(this), PackMenuClient.splash.getY(this), 0);
-				RenderSystem.rotatef(PackMenuClient.splashRotation, 0.0F, 0.0F, 1.0F);
-				float f2 = 1.8F - MathHelper.abs(MathHelper.sin(Util.getMillis() % 1000L / 1000.0F * ((float) Math.PI * 2F)) * 0.1F);
+				stack.pushPose();
+				stack.translate(PackMenuClient.splash.getX(this), PackMenuClient.splash.getY(this), 0);
+				stack.mulPose(Vector3f.ZP.rotationDegrees(PackMenuClient.splashRotation));
+				float f2 = 1.8F - Mth.abs(Mth.sin(Util.getMillis() % 1000L / 1000.0F * ((float) Math.PI * 2F)) * 0.1F);
 				f2 = f2 * 100.0F / (getFont().width(this.splash) + 32);
-				RenderSystem.scalef(f2, f2, f2);
+				stack.scale(f2, f2, f2);
 				drawCenteredString(stack, getFont(), this.splash, 0, -8, PackMenuClient.splashColor);
-				RenderSystem.popMatrix();
+				stack.popPose();
 			}
 
 			String s = "Minecraft " + SharedConstants.getCurrentVersion().getName();
 			s = s + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
-
-			for (Widget widget : this.buttons) {
-				widget.setAlpha(f1);
+			if (this.minecraft.isProbablyModded()) {
+				s = s + I18n.get("menu.modded");
 			}
 
-			for (int i = 0; i < this.buttons.size(); ++i) {
-				this.buttons.get(i).render(stack, mouseX, mouseY, partialTicks);
+			for (Widget widget : this.renderables) {
+				if (widget instanceof AbstractWidget) ((AbstractWidget) widget).setAlpha(f1);
+			}
+
+			for (int i = 0; i < this.renderables.size(); ++i) {
+				this.renderables.get(i).render(stack, mouseX, mouseY, partialTicks);
 			}
 
 			BrandingControl.forEachLine(true, true, (brdline, brd) -> drawString(stack, getFont(), brd, 2, this.height - (10 + brdline * (getFont().lineHeight + 1)), 16777215 | l));
@@ -133,14 +143,15 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 			if (mouseX > this.copyrightX && mouseX < this.copyrightX + this.copyrightWidth && mouseY > this.height - 10 && mouseY < this.height) {
 				fill(stack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | l);
 			}
+			// modUpdateNotification.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 		}
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
-		for (Widget b : this.buttons) {
-			if (b.isHovered() && b instanceof JsonButton) {
+		for (Widget b : this.renderables) {
+			if (b instanceof JsonButton && ((JsonButton) b).isHovered()) {
 				((JsonButton) b).tickScrollCounter();
 			}
 		}
@@ -151,48 +162,47 @@ public class ExtendedMenuScreen extends MainMenuScreen {
 		int buttonWidth = this.width / 2;
 
 		//Singleplayer Button
-		this.addButton(new Button(buttonWidth - 100, buttonHeight, 200, 20, new TranslationTextComponent("menu.singleplayer"), (p_213089_1_) -> {
-			this.minecraft.setScreen(new WorldSelectionScreen(this));
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight, 200, 20, new TranslatableComponent("menu.singleplayer"), (p_213089_1_) -> {
+			this.minecraft.setScreen(new SelectWorldScreen(this));
 		}));
 
 		//Multiplayer Button
-		this.addButton(new Button(buttonWidth - 100, buttonHeight + 24 * 1, 200, 20, new TranslationTextComponent("menu.multiplayer"), (p_213086_1_) -> {
-			this.minecraft.setScreen(new MultiplayerScreen(this));
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 1, 200, 20, new TranslatableComponent("menu.multiplayer"), (p_213086_1_) -> {
+			this.minecraft.setScreen(new JoinMultiplayerScreen(this));
 		}));
 
 		//Realms Button
-		this.addButton(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslationTextComponent("menu.online"), (p_213095_1_) -> {
-			RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
-			realmsbridgescreen.switchToRealms(this);
+		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslatableComponent("menu.online"), (p_213095_1_) -> {
+			Minecraft.getInstance().setScreen(new RealmsMainScreen(Minecraft.getInstance().screen));
 		}));
 
 		//Mods Button
-		this.addButton(new Button(buttonWidth - 100, buttonHeight + 24 * 2, 98, 20, new TranslationTextComponent("fml.menu.mods"), button -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 2, 98, 20, new TranslatableComponent("fml.menu.mods"), button -> {
 			this.minecraft.setScreen(new ModListScreen(this));
 		}));
 
 		//Language Button
-		this.addButton(new ImageButton(buttonWidth - 124, buttonHeight + 72 + 12, 20, 20, 0, 106, 20, Widget.WIDGETS_LOCATION, 256, 256, (p_213090_1_) -> {
-			this.minecraft.setScreen(new LanguageScreen(this, this.minecraft.options, this.minecraft.getLanguageManager()));
-		}, new TranslationTextComponent("narrator.button.language")));
+		this.addRenderableWidget(new ImageButton(buttonWidth - 124, buttonHeight + 72 + 12, 20, 20, 0, 106, 20, AbstractWidget.WIDGETS_LOCATION, 256, 256, (p_213090_1_) -> {
+			this.minecraft.setScreen(new LanguageSelectScreen(this, this.minecraft.options, this.minecraft.getLanguageManager()));
+		}, new TranslatableComponent("narrator.button.language")));
 
 		//Options Button
-		this.addButton(new Button(buttonWidth - 100, buttonHeight + 72 + 12, 98, 20, new TranslationTextComponent("menu.options"), (p_213096_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.options"), (p_213096_1_) -> {
 			this.minecraft.setScreen(new OptionsScreen(this, this.minecraft.options));
 		}));
 
 		//Quit Button
-		this.addButton(new Button(buttonWidth + 2, buttonHeight + 72 + 12, 98, 20, new TranslationTextComponent("menu.quit"), (p_213094_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.quit"), (p_213094_1_) -> {
 			this.minecraft.stop();
 		}));
 
 		//Accessibility Options Button
-		this.addButton(new ImageButton(buttonWidth + 104, buttonHeight + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_TEXTURE, 32, 64, (p_213088_1_) -> {
-			this.minecraft.setScreen(new AccessibilityScreen(this, this.minecraft.options));
-		}, new TranslationTextComponent("narrator.button.accessibility")));
+		this.addRenderableWidget(new ImageButton(buttonWidth + 104, buttonHeight + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_TEXTURE, 32, 64, (p_213088_1_) -> {
+			this.minecraft.setScreen(new AccessibilityOptionsScreen(this, this.minecraft.options));
+		}, new TranslatableComponent("narrator.button.accessibility")));
 	}
 
-	public FontRenderer getFont() {
+	public Font getFont() {
 		return font;
 	}
 

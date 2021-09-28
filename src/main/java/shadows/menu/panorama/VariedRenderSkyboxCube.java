@@ -3,12 +3,12 @@ package shadows.menu.panorama;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import net.minecraft.client.renderer.RenderSkyboxCube;
+import net.minecraft.client.renderer.CubeMap;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import shadows.menu.PackMenuClient;
 
-public class VariedRenderSkyboxCube extends RenderSkyboxCube {
+public class VariedRenderSkyboxCube extends CubeMap {
 
 	private final ResourceLocation[][] locations = new ResourceLocation[10][6];
 

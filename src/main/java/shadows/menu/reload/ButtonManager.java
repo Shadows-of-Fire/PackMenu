@@ -10,14 +10,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 import shadows.menu.PackMenu;
 import shadows.menu.buttons.JsonButton;
 
-public class ButtonManager extends JsonReloadListener {
+public class ButtonManager extends SimpleJsonResourceReloadListener {
 
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(JsonButton.class, (JsonDeserializer<JsonButton>) (json, type, ctx) -> {
 		return JsonButton.deserialize(json.getAsJsonObject());
@@ -30,7 +30,7 @@ public class ButtonManager extends JsonReloadListener {
 	}
 
 	@Override
-	protected void apply(Map<ResourceLocation, JsonElement> objects, IResourceManager mgr, IProfiler profiler) {
+	protected void apply(Map<ResourceLocation, JsonElement> objects, ResourceManager mgr, ProfilerFiller profiler) {
 		buttons.clear();
 		for (Entry<ResourceLocation, JsonElement> obj : objects.entrySet()) {
 			try {

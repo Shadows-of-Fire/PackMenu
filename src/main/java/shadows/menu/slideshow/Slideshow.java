@@ -1,10 +1,10 @@
 package shadows.menu.slideshow;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -22,21 +22,21 @@ public class Slideshow {
 	private static boolean fading = false;
 
 	@SuppressWarnings("deprecation")
-	public static void render(ExtendedMenuScreen screen, MatrixStack stack, float partialTicks) {
+	public static void render(ExtendedMenuScreen screen, PoseStack stack, float partialTicks) {
 		Minecraft mc = screen.getMinecraft();
-		mc.getTextureManager().bind(PackMenuClient.slideshowTextures.get(index));
+		mc.getTextureManager().bindForSetup(PackMenuClient.slideshowTextures.get(index));
 		Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 		if (fading) {
 			RenderSystem.enableBlend();
-			mc.getTextureManager().bind(PackMenuClient.slideshowTextures.get(nextIndex()));
+			mc.getTextureManager().bindForSetup(PackMenuClient.slideshowTextures.get(nextIndex()));
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, getAlphaFade(partialTicks));
 			Screen.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 			RenderSystem.disableBlend();
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 

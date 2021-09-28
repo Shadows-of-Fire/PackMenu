@@ -4,12 +4,12 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.Strings;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import shadows.menu.ExtendedMenuScreen;
 import shadows.menu.buttons.AnchorPoint;
 import shadows.placebo.config.Configuration;
@@ -48,11 +48,11 @@ public class Logo {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void draw(ExtendedMenuScreen screen, MatrixStack stack) {
-		Minecraft mc = Minecraft.getInstance();
-		mc.getTextureManager().bind(this.texture);
+	public void draw(ExtendedMenuScreen screen, PoseStack stack) {
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, texture);
 		RenderSystem.disableDepthTest();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
 		stack.pushPose();
 		stack.translate(anchor.getX(screen), anchor.getY(screen), 0);
 		stack.scale((float) width / texWidth, (float) height / texHeight, 1);

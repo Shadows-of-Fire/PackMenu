@@ -3,21 +3,21 @@ package shadows.menu.gui;
 import java.util.List;
 import java.util.Random;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.minecraft.client.gui.DialogTexts;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.ClickEvent.Action;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.ClickEvent.Action;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -36,20 +36,20 @@ public class SupporterScreen extends Screen {
 	protected static final Int2IntMap colorFades = new Int2IntOpenHashMap();
 	protected static long ticks = 0;
 	protected final Random rand = new Random();
-	protected final ITextComponent patreon, patreon2, patreon3;
+	protected final Component patreon, patreon2, patreon3;
 
 	public SupporterScreen(Screen parent) {
-		super(new TranslationTextComponent("packmenu.supporters"));
+		super(new TranslatableComponent("packmenu.supporters"));
 		this.parent = parent;
 		colorFades.defaultReturnValue(-1);
-		patreon = new TranslationTextComponent("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
-		patreon2 = new TranslationTextComponent("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
-		patreon3 = new TranslationTextComponent("packmenu.support1");
+		patreon = new TranslatableComponent("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
+		patreon2 = new TranslatableComponent("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
+		patreon3 = new TranslatableComponent("packmenu.support1");
 	}
 
 	@Override
 	protected void init() {
-		this.addButton(new Button(5, this.height - 25, 40, 20, DialogTexts.GUI_BACK, (p_213056_1_) -> {
+		this.addRenderableWidget(new Button(5, this.height - 25, 40, 20, CommonComponents.GUI_BACK, (p_213056_1_) -> {
 			this.minecraft.setScreen(this.parent);
 		}));
 	}
@@ -65,12 +65,12 @@ public class SupporterScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 		renderBackground(matrixStack);
 
 		matrixStack.scale(2, 2, 2);
 		font.drawShadow(matrixStack, this.title, (this.width / 2 - font.width(this.title)) / 2, 5, 0xEEEEEE);
-		font.drawShadow(matrixStack, this.patreon, (this.width / 2 - font.width(this.patreon)) / 2, (this.height - font.lineHeight * 2 - 5) / 2, isBigLinkHovered(mouseX, mouseY) ? TextFormatting.RED.getColor() : TextFormatting.DARK_RED.getColor());
+		font.drawShadow(matrixStack, this.patreon, (this.width / 2 - font.width(this.patreon)) / 2, (this.height - font.lineHeight * 2 - 5) / 2, isBigLinkHovered(mouseX, mouseY) ? ChatFormatting.RED.getColor() : ChatFormatting.DARK_RED.getColor());
 		matrixStack.scale(0.5F, 0.5F, 0.5F);
 
 		int color = isTinyLinkHovered(mouseX, mouseY) ? 0x33BB33 : 0x009900;
@@ -81,13 +81,13 @@ public class SupporterScreen extends Screen {
 		int width = (int) (this.width * 0.66);
 		int strWidth = 0;
 		int renders = 3;
-		ITextComponent rendering = new StringTextComponent("");
+		Component rendering = new TextComponent("");
 		for (int i = 0; i < names.size(); i++) {
 			String s = names.get(i);
-			rendering = new TranslationTextComponent("%s %s", rendering, comp(i, s + "    "));
+			rendering = new TranslatableComponent("%s %s", rendering, comp(i, s + "    "));
 			if ((strWidth = font.width(rendering)) >= width) {
 				font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + font.lineHeight), 0xCCCCCC);
-				rendering = new StringTextComponent("");
+				rendering = new TextComponent("");
 			} else if (i == names.size() - 1) {
 				font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + font.lineHeight), 0xCCCCCC);
 			}
@@ -97,7 +97,7 @@ public class SupporterScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(MatrixStack matrixStack, int vOffset) {
+	public void renderBackground(PoseStack matrixStack, int vOffset) {
 		this.renderDirtBackground(vOffset);
 	}
 
@@ -108,11 +108,11 @@ public class SupporterScreen extends Screen {
 		return super.mouseClicked(pMouseX, pMouseY, pButton);
 	}
 
-	ITextComponent comp(int index, String s) {
-		StringTextComponent comp = new StringTextComponent(s);
+	Component comp(int index, String s) {
+		TextComponent comp = new TextComponent(s);
 		if (colorFades.get(index) != -1) {
 			int color = colorFades.get(index);
-			return comp.withStyle(Style.EMPTY.withColor(Color.fromRgb(color)));
+			return comp.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));
 		} else {
 			if (rand.nextInt(1600) == 0) {
 				colorFades.put(index, 0x9999FF);

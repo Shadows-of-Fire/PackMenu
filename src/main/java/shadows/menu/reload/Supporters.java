@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 import shadows.menu.PackMenu;
 
-public class Supporters extends ReloadListener<List<String>> {
+public class Supporters extends SimplePreparableReloadListener<List<String>> {
 
 	public static final Supporters INSTANCE = new Supporters();
 
@@ -28,8 +28,8 @@ public class Supporters extends ReloadListener<List<String>> {
 	public Supporters() {
 	}
 
-	protected List<String> prepare(IResourceManager p_212854_1_, IProfiler p_212854_2_) {
-		try (IResource iresource = Minecraft.getInstance().getResourceManager().getResource(TEXT_LOCATION);
+	protected List<String> prepare(ResourceManager p_212854_1_, ProfilerFiller p_212854_2_) {
+		try (Resource iresource = Minecraft.getInstance().getResourceManager().getResource(TEXT_LOCATION);
 				BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8));) {
 			return bufferedreader.lines().map(String::trim).filter((p_215277_0_) -> {
 				return p_215277_0_.hashCode() != 125780783;
@@ -39,7 +39,7 @@ public class Supporters extends ReloadListener<List<String>> {
 		}
 	}
 
-	protected void apply(List<String> p_212853_1_, IResourceManager p_212853_2_, IProfiler p_212853_3_) {
+	protected void apply(List<String> p_212853_1_, ResourceManager p_212853_2_, ProfilerFiller p_212853_3_) {
 		this.supporters.clear();
 		this.supporters.addAll(p_212853_1_);
 		Collections.shuffle(this.supporters);

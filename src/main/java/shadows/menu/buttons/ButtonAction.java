@@ -7,14 +7,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.RealmsMainScreen;
 
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.ConnectingScreen;
-import net.minecraft.client.gui.screen.MultiplayerScreen;
+import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
-import net.minecraft.realms.RealmsBridgeScreen;
-import net.minecraft.util.Util;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import shadows.menu.PackMenuClient;
 
 @SuppressWarnings("deprecation")
@@ -22,14 +23,14 @@ public enum ButtonAction {
 	CONNECT_TO_SERVER(ai -> { //Data: Server IP (String)
 		Minecraft mc = Minecraft.getInstance();
 		ServerData data = getOrCreateServerData((String) ai.getData());
-		mc.setScreen(new ConnectingScreen(mc.screen, mc, data));
+		ServerAddress addr = ServerAddress.parseString((String) ai.getData());
+		ConnectScreen.startConnecting(mc.screen, mc, addr, data);
 	}, j -> j.get("data").getAsString()),
 	LOAD_WORLD(ai -> { //Data: World Name (String)
 
 	}, j -> j.get("data").getAsString()),
 	REALMS(ai -> {
-		RealmsBridgeScreen realmsbridgescreen = new RealmsBridgeScreen();
-	    realmsbridgescreen.switchToRealms(Minecraft.getInstance().screen);
+		Minecraft.getInstance().setScreen(new RealmsMainScreen(Minecraft.getInstance().screen));
 	}, j -> null),
 	RELOAD(ai -> { //Data: null
 		PackMenuClient.loadConfig();
@@ -37,7 +38,7 @@ public enum ButtonAction {
 	}, j -> null),
 	OPEN_GUI(ai -> { //Data: ScreenType (String)
 		Minecraft.getInstance().setScreen(((ScreenType) ai.getData()).apply(Minecraft.getInstance().screen));
-	}, j -> ScreenType.valueOf(j.get("data").getAsString().toUpperCase(Locale.ROOT))),
+	}, j -> ScreenType.valueOf(ScreenType.class, j.get("data").getAsString().toUpperCase(Locale.ROOT))),
 	OPEN_URL(ai -> { //Data: Link (URI)
 		Util.getPlatform().openUri((URI) ai.getData());
 	}, j -> {
@@ -75,7 +76,7 @@ public enum ButtonAction {
 	}
 
 	public static ServerData getOrCreateServerData(String ip) {
-		MultiplayerScreen scn = new MultiplayerScreen(Minecraft.getInstance().screen);
+		JoinMultiplayerScreen scn = new JoinMultiplayerScreen(Minecraft.getInstance().screen);
 		scn.init(Minecraft.getInstance(), 0, 0);
 		ServerList list = scn.getServers();
 		for (int i = 0; i < list.size(); i++) {

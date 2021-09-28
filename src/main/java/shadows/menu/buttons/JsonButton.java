@@ -4,19 +4,20 @@ import java.util.Locale;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import joptsimple.internal.Strings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import shadows.menu.ExtendedMenuScreen;
 
 public class JsonButton extends Button {
@@ -79,10 +80,10 @@ public class JsonButton extends Button {
 	/**
 	 * The translated message instace for hover text.
 	 */
-	protected ITextComponent hoverMessage;
+	protected Component hoverMessage;
 
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
-		super(xPos, yPos, width, height, new TranslationTextComponent(langKey), handler, Button.NO_TOOLTIP);
+		super(xPos, yPos, width, height, new TranslatableComponent(langKey), handler, Button.NO_TOOLTIP);
 		handler.setSource(this);
 		this.xOff = xPos;
 		this.yOff = yPos;
@@ -121,8 +122,8 @@ public class JsonButton extends Button {
 	public JsonButton setup(ExtendedMenuScreen screen) {
 		this.x = this.xOff + anchor.getX(screen);
 		this.y = this.yOff + anchor.getY(screen);
-		this.setMessage(new TranslationTextComponent(langKey));
-		this.hoverMessage = new TranslationTextComponent(hoverKey);
+		this.setMessage(new TranslatableComponent(langKey));
+		this.hoverMessage = new TranslatableComponent(hoverKey);
 		return this;
 	}
 
@@ -145,7 +146,7 @@ public class JsonButton extends Button {
 	}
 
 	@Override
-	public ITextComponent getMessage() {
+	public Component getMessage() {
 		if (this.isHovered) return hoverMessage;
 		return super.getMessage();
 	}
@@ -154,18 +155,18 @@ public class JsonButton extends Button {
 	 * Draws this button to the screen.
 	 */
 	@Override
-	public void renderButton(MatrixStack stack, int mouseX, int mouseY, float partial) {
+	public void renderButton(PoseStack stack, int mouseX, int mouseY, float partial) {
 		if (this.visible) {
 			if (usesWidgets) renderWidgetButton(stack, mouseX, mouseY, partial);
 			else renderImageButton(stack, mouseX, mouseY, partial);
 		}
 	}
 
-	public static void drawCenteredStringNoShadow(MatrixStack stack, FontRenderer font, String string, int x, int y, int color) {
+	public static void drawCenteredStringNoShadow(PoseStack stack, Font font, String string, int x, int y, int color) {
 		font.draw(stack, string, x - font.width(string) / 2, y, color);
 	}
 
-	public void drawCenteredString0(MatrixStack stack, FontRenderer font, String string, int x, int y, int color) {
+	public void drawCenteredString0(PoseStack stack, Font font, String string, int x, int y, int color) {
 		if (dropShadow) super.drawCenteredString(stack, font, string, x, y, color);
 		else drawCenteredStringNoShadow(stack, font, string, x, y, color);
 	}
@@ -174,10 +175,11 @@ public class JsonButton extends Button {
 	 * Renders this button as if it was a default button based on the widgets texture (automatic scaling)
 	 */
 	@SuppressWarnings("deprecation")
-	private void renderWidgetButton(MatrixStack stack, int mouseX, int mouseY, float partial) {
+	private void renderWidgetButton(PoseStack stack, int mouseX, int mouseY, float partial) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.getTextureManager().bind(texture);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, texture);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		int i = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -191,10 +193,10 @@ public class JsonButton extends Button {
 	/**
 	 * Renders this button as if it was an image button.
 	 */
-	private void renderImageButton(MatrixStack stack, int mouseX, int mouseY, float partial) {
-		Minecraft mc = Minecraft.getInstance();
+	private void renderImageButton(PoseStack stack, int mouseX, int mouseY, float partial) {
 		this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-		mc.getTextureManager().bind(this.texture);
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, texture);
 		RenderSystem.disableDepthTest();
 		int x = u, y = v;
 		if (this.isHovered()) {
@@ -211,7 +213,7 @@ public class JsonButton extends Button {
 		renderText(stack);
 	}
 
-	protected void renderText(MatrixStack stack) {
+	protected void renderText(PoseStack stack) {
 		Minecraft mc = Minecraft.getInstance();
 		int color = getFGColor();
 		String buttonText = this.getMessage().getString();
@@ -245,7 +247,7 @@ public class JsonButton extends Button {
 		this.scrollCounter++;
 	}
 
-	public ITextProperties trimStringToWidth(ITextProperties str, int width) {
+	public FormattedText trimStringToWidth(FormattedText str, int width) {
 		return Minecraft.getInstance().font.getSplitter().splitLines(str, width, Style.EMPTY).get(0);
 	}
 
