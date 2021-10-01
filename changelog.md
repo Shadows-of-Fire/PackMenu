@@ -1,3 +1,5 @@
+## 3.0.0
+* Initial update to 1.17.1
 ## 2.5.0
 * Added the Supporters Screen, where you can display the names of those who support you and a link to a donation page.
 ## 2.4.2
