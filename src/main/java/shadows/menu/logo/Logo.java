@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import shadows.menu.ExtendedMenuScreen;
 import shadows.menu.buttons.AnchorPoint;
-import shadows.placebo.config.Configuration;
 
 public class Logo {
 

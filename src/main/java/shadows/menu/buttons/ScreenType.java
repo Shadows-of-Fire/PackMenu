@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
+import net.minecraftforge.client.gui.ModListScreen;
 import shadows.menu.gui.SupporterScreen;
 
 public enum ScreenType implements Function<Screen, Screen> {

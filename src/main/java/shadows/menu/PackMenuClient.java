@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import net.minecraftforge.client.event.ScreenOpenEvent;
 import org.apache.commons.io.IOUtils;
 
 import net.minecraft.client.Minecraft;
@@ -26,7 +27,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.Pack.PackConstructor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ResourceLocationException;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -148,9 +148,9 @@ public class PackMenuClient {
 	}
 
 	@SubscribeEvent
-	public void hijackMenu(GuiOpenEvent e) {
-		if (e.getGui() != null && e.getGui().getClass() == TitleScreen.class) {
-			e.setGui(new ExtendedMenuScreen(panoramaFade));
+	public void hijackMenu(ScreenOpenEvent e) {
+		if (e.getScreen() != null && e.getScreen().getClass() == TitleScreen.class) {
+			e.setScreen(new ExtendedMenuScreen(panoramaFade));
 		}
 	}
 

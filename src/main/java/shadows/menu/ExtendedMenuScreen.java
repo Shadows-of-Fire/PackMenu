@@ -27,8 +27,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
-import net.minecraftforge.fmllegacy.BrandingControl;
+import net.minecraftforge.client.gui.ModListScreen;
+import net.minecraftforge.internal.BrandingControl;
 import shadows.menu.buttons.JsonButton;
 import shadows.menu.slideshow.Slideshow;
 
@@ -122,11 +122,10 @@ public class ExtendedMenuScreen extends TitleScreen {
 				stack.popPose();
 			}
 
-			String s = "Minecraft " + SharedConstants.getCurrentVersion().getName();
+			String s = "Minecraft " + SharedConstants.m_183709_().getName();
 			s = s + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
-			if (this.minecraft.isProbablyModded()) {
-				s = s + I18n.get("menu.modded");
-			}
+			s = s + I18n.get("menu.modded");
+
 
 			for (Widget widget : this.renderables) {
 				if (widget instanceof AbstractWidget) ((AbstractWidget) widget).setAlpha(f1);
@@ -151,7 +150,7 @@ public class ExtendedMenuScreen extends TitleScreen {
 	public void tick() {
 		super.tick();
 		for (Widget b : this.renderables) {
-			if (b instanceof JsonButton && ((JsonButton) b).isHovered()) {
+			if (b instanceof JsonButton && ((JsonButton) b).isHovered) {
 				((JsonButton) b).tickScrollCounter();
 			}
 		}
