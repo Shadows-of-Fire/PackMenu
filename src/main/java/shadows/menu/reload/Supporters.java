@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import shadows.menu.PackMenu;
 
 public class Supporters extends SimplePreparableReloadListener<List<String>> {
@@ -28,17 +28,17 @@ public class Supporters extends SimplePreparableReloadListener<List<String>> {
 	public Supporters() {
 	}
 
+	@Override
 	protected List<String> prepare(ResourceManager p_212854_1_, ProfilerFiller p_212854_2_) {
 		try (Resource iresource = Minecraft.getInstance().getResourceManager().getResource(TEXT_LOCATION);
 				BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8));) {
-			return bufferedreader.lines().map(String::trim).filter((p_215277_0_) -> {
-				return p_215277_0_.hashCode() != 125780783;
-			}).collect(Collectors.toList());
+			return bufferedreader.lines().map(String::trim).filter(p_215277_0_ -> (p_215277_0_.hashCode() != 125780783)).collect(Collectors.toList());
 		} catch (IOException ioexception) {
 			return Collections.emptyList();
 		}
 	}
 
+	@Override
 	protected void apply(List<String> p_212853_1_, ResourceManager p_212853_2_, ProfilerFiller p_212853_3_) {
 		this.supporters.clear();
 		this.supporters.addAll(p_212853_1_);

@@ -33,7 +33,7 @@ public enum ScreenType implements Function<Screen, Screen> {
 
 	@Override
 	public Screen apply(Screen t) {
-		return supplier.apply(t);
+		return this.supplier.apply(t);
 	}
 
 	public static class RPScreenFunction implements Function<Screen, Screen> {

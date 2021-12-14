@@ -18,16 +18,16 @@ public class ActionInstance implements OnPress {
 
 	@Override
 	public void onPress(Button button) {
-		action.onPress(this);
+		this.action.onPress(this);
 	}
 
 	@Nullable
 	public Object getData() {
-		return data;
+		return this.data;
 	}
 
 	public Button getSource() {
-		return source;
+		return this.source;
 	}
 
 	public void setSource(Button button) {

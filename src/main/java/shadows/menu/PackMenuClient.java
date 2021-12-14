@@ -58,7 +58,7 @@ public class PackMenuClient {
 	public static Offset title, javaEd, forgeWarn, splash;
 	public static boolean folderPack = false;
 	public static float splashRotation = -20.0F;
-	public static int splashColor = 16776960 | (255 << 24);
+	public static int splashColor = 16776960 | 255 << 24;
 	public static AnchorPoint splashAnchor = AnchorPoint.MIDDLE_CENTER;
 	public static List<ResourceLocation> slideshowTextures;
 	public static int slideshowDuration = 200;
@@ -208,11 +208,11 @@ public class PackMenuClient {
 		}
 
 		public int getX(ExtendedMenuScreen scn) {
-			return anchor.getX(scn) + x;
+			return this.anchor.getX(scn) + this.x;
 		}
 
 		public int getY(ExtendedMenuScreen scn) {
-			return anchor.getY(scn) + y;
+			return this.anchor.getY(scn) + this.y;
 		}
 
 	}

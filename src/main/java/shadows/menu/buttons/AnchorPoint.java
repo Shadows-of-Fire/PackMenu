@@ -30,10 +30,10 @@ public enum AnchorPoint {
 	}
 
 	public int getX(ExtendedMenuScreen scn) {
-		return xFunc.apply(scn);
+		return this.xFunc.apply(scn);
 	}
 
 	public int getY(ExtendedMenuScreen scn) {
-		return yFunc.apply(scn);
+		return this.yFunc.apply(scn);
 	}
 }

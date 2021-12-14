@@ -68,11 +68,11 @@ public enum ButtonAction {
 	}
 
 	public void onPress(ActionInstance button) {
-		action.accept(button);
+		this.action.accept(button);
 	}
 
 	public Object readData(JsonObject json) {
-		return reader.apply(json);
+		return this.reader.apply(json);
 	}
 
 	public static ServerData getOrCreateServerData(String ip) {

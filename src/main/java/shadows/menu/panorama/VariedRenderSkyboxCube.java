@@ -30,6 +30,7 @@ public class VariedRenderSkyboxCube extends CubeMap {
 		super.images = this.locations[variation];
 	}
 
+	@Override
 	public CompletableFuture<Void> preload(TextureManager texMngr, Executor backgroundExecutor) {
 		CompletableFuture<?>[] completablefuture = new CompletableFuture[PackMenuClient.panoramaVariations * 6];
 

@@ -48,7 +48,7 @@ public class ExtendedMenuScreen extends TitleScreen {
 		this.children().clear();
 		//this.narratables.clear();
 		if (PackMenuClient.BUTTON_MANAGER.getButtons().isEmpty()) {
-			addDefaultButtons();
+			this.addDefaultButtons();
 		} else PackMenuClient.BUTTON_MANAGER.getButtons().forEach(b -> {
 			this.addRenderableWidget(b).setup(this);
 		});
@@ -106,9 +106,9 @@ public class ExtendedMenuScreen extends TitleScreen {
 				if (x != 0 || y != 0) {
 					stack.pushPose();
 					stack.translate(x, y, 0);
-					ForgeHooksClient.renderMainMenu(this, stack, getFont(), this.width, this.height, alpha);
+					ForgeHooksClient.renderMainMenu(this, stack, this.getFont(), this.width, this.height, alpha);
 					stack.popPose();
-				} else ForgeHooksClient.renderMainMenu(this, stack, getFont(), this.width, this.height, alpha);
+				} else ForgeHooksClient.renderMainMenu(this, stack, this.getFont(), this.width, this.height, alpha);
 			}
 
 			if (this.splash != null && PackMenuClient.drawSplash) {
@@ -116,9 +116,9 @@ public class ExtendedMenuScreen extends TitleScreen {
 				stack.translate(PackMenuClient.splash.getX(this), PackMenuClient.splash.getY(this), 0);
 				stack.mulPose(Vector3f.ZP.rotationDegrees(PackMenuClient.splashRotation));
 				float f2 = 1.8F - Mth.abs(Mth.sin(Util.getMillis() % 1000L / 1000.0F * ((float) Math.PI * 2F)) * 0.1F);
-				f2 = f2 * 100.0F / (getFont().width(this.splash) + 32);
+				f2 = f2 * 100.0F / (this.getFont().width(this.splash) + 32);
 				stack.scale(f2, f2, f2);
-				drawCenteredString(stack, getFont(), this.splash, 0, -8, PackMenuClient.splashColor);
+				drawCenteredString(stack, this.getFont(), this.splash, 0, -8, PackMenuClient.splashColor);
 				stack.popPose();
 			}
 
@@ -136,10 +136,10 @@ public class ExtendedMenuScreen extends TitleScreen {
 				this.renderables.get(i).render(stack, mouseX, mouseY, partialTicks);
 			}
 
-			BrandingControl.forEachLine(true, true, (brdline, brd) -> drawString(stack, getFont(), brd, 2, this.height - (10 + brdline * (getFont().lineHeight + 1)), 16777215 | l));
+			BrandingControl.forEachLine(true, true, (brdline, brd) -> drawString(stack, this.getFont(), brd, 2, this.height - (10 + brdline * (this.getFont().lineHeight + 1)), 16777215 | l));
 
-			BrandingControl.forEachAboveCopyrightLine((brdline, brd) -> drawString(stack, getFont(), brd, this.width - getFont().width(brd), this.height - (10 + (brdline + 1) * (getFont().lineHeight + 1)), 16777215 | l));
-			drawString(stack, getFont(), "Copyright Mojang AB. Do not distribute!", this.copyrightX, this.height - 10, 16777215 | l);
+			BrandingControl.forEachAboveCopyrightLine((brdline, brd) -> drawString(stack, this.getFont(), brd, this.width - this.getFont().width(brd), this.height - (10 + (brdline + 1) * (this.getFont().lineHeight + 1)), 16777215 | l));
+			drawString(stack, this.getFont(), "Copyright Mojang AB. Do not distribute!", this.copyrightX, this.height - 10, 16777215 | l);
 			if (mouseX > this.copyrightX && mouseX < this.copyrightX + this.copyrightWidth && mouseY > this.height - 10 && mouseY < this.height) {
 				fill(stack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | l);
 			}
@@ -162,17 +162,17 @@ public class ExtendedMenuScreen extends TitleScreen {
 		int buttonWidth = this.width / 2;
 
 		//Singleplayer Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight, 200, 20, new TranslatableComponent("menu.singleplayer"), (p_213089_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight, 200, 20, new TranslatableComponent("menu.singleplayer"), p_213089_1_ -> {
 			this.minecraft.setScreen(new SelectWorldScreen(this));
 		}));
 
 		//Multiplayer Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 1, 200, 20, new TranslatableComponent("menu.multiplayer"), (p_213086_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 1, 200, 20, new TranslatableComponent("menu.multiplayer"), p_213086_1_ -> {
 			this.minecraft.setScreen(new JoinMultiplayerScreen(this));
 		}));
 
 		//Realms Button
-		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslatableComponent("menu.online"), (p_213095_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslatableComponent("menu.online"), p_213095_1_ -> {
 			Minecraft.getInstance().setScreen(new RealmsMainScreen(Minecraft.getInstance().screen));
 		}));
 
@@ -182,28 +182,28 @@ public class ExtendedMenuScreen extends TitleScreen {
 		}));
 
 		//Language Button
-		this.addRenderableWidget(new ImageButton(buttonWidth - 124, buttonHeight + 72 + 12, 20, 20, 0, 106, 20, AbstractWidget.WIDGETS_LOCATION, 256, 256, (p_213090_1_) -> {
+		this.addRenderableWidget(new ImageButton(buttonWidth - 124, buttonHeight + 72 + 12, 20, 20, 0, 106, 20, AbstractWidget.WIDGETS_LOCATION, 256, 256, p_213090_1_ -> {
 			this.minecraft.setScreen(new LanguageSelectScreen(this, this.minecraft.options, this.minecraft.getLanguageManager()));
 		}, new TranslatableComponent("narrator.button.language")));
 
 		//Options Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.options"), (p_213096_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.options"), p_213096_1_ -> {
 			this.minecraft.setScreen(new OptionsScreen(this, this.minecraft.options));
 		}));
 
 		//Quit Button
-		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.quit"), (p_213094_1_) -> {
+		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.quit"), p_213094_1_ -> {
 			this.minecraft.stop();
 		}));
 
 		//Accessibility Options Button
-		this.addRenderableWidget(new ImageButton(buttonWidth + 104, buttonHeight + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_TEXTURE, 32, 64, (p_213088_1_) -> {
+		this.addRenderableWidget(new ImageButton(buttonWidth + 104, buttonHeight + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_TEXTURE, 32, 64, p_213088_1_ -> {
 			this.minecraft.setScreen(new AccessibilityOptionsScreen(this, this.minecraft.options));
 		}, new TranslatableComponent("narrator.button.accessibility")));
 	}
 
 	public Font getFont() {
-		return font;
+		return this.font;
 	}
 
 }

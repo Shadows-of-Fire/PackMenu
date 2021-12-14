@@ -42,40 +42,40 @@ public class SupporterScreen extends Screen {
 		super(new TranslatableComponent("packmenu.supporters"));
 		this.parent = parent;
 		colorFades.defaultReturnValue(-1);
-		patreon = new TranslatableComponent("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
-		patreon2 = new TranslatableComponent("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
-		patreon3 = new TranslatableComponent("packmenu.support1");
+		this.patreon = new TranslatableComponent("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
+		this.patreon2 = new TranslatableComponent("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
+		this.patreon3 = new TranslatableComponent("packmenu.support1");
 	}
 
 	@Override
 	protected void init() {
-		this.addRenderableWidget(new Button(5, this.height - 25, 40, 20, CommonComponents.GUI_BACK, (p_213056_1_) -> {
+		this.addRenderableWidget(new Button(5, this.height - 25, 40, 20, CommonComponents.GUI_BACK, p_213056_1_ -> {
 			this.minecraft.setScreen(this.parent);
 		}));
 	}
 
 	protected boolean isBigLinkHovered(int mouseX, int mouseY) {
-		int texWidth = this.font.width(patreon);
-		return mouseY > (this.height - font.lineHeight * 2 - 5) && mouseY < (this.height - 5) && mouseX > (this.width / 2 - texWidth) && mouseX < (this.width / 2 + texWidth);
+		int texWidth = this.font.width(this.patreon);
+		return mouseY > this.height - this.font.lineHeight * 2 - 5 && mouseY < this.height - 5 && mouseX > this.width / 2 - texWidth && mouseX < this.width / 2 + texWidth;
 	}
 
 	protected boolean isTinyLinkHovered(int mouseX, int mouseY) {
-		int texWidth = this.font.width(patreon3);
-		return mouseY > (this.height - font.lineHeight * 2 - 5) && mouseY < (this.height - 5) && mouseX > (this.width - texWidth - 5) && mouseX < (this.width - 5);
+		int texWidth = this.font.width(this.patreon3);
+		return mouseY > this.height - this.font.lineHeight * 2 - 5 && mouseY < this.height - 5 && mouseX > this.width - texWidth - 5 && mouseX < this.width - 5;
 	}
 
 	@Override
 	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		renderBackground(matrixStack);
+		this.renderBackground(matrixStack);
 
 		matrixStack.scale(2, 2, 2);
-		font.drawShadow(matrixStack, this.title, (this.width / 2 - font.width(this.title)) / 2, 5, 0xEEEEEE);
-		font.drawShadow(matrixStack, this.patreon, (this.width / 2 - font.width(this.patreon)) / 2, (this.height - font.lineHeight * 2 - 5) / 2, isBigLinkHovered(mouseX, mouseY) ? ChatFormatting.RED.getColor() : ChatFormatting.DARK_RED.getColor());
+		this.font.drawShadow(matrixStack, this.title, (this.width / 2 - this.font.width(this.title)) / 2, 5, 0xEEEEEE);
+		this.font.drawShadow(matrixStack, this.patreon, (this.width / 2 - this.font.width(this.patreon)) / 2, (this.height - this.font.lineHeight * 2 - 5) / 2, this.isBigLinkHovered(mouseX, mouseY) ? ChatFormatting.RED.getColor() : ChatFormatting.DARK_RED.getColor());
 		matrixStack.scale(0.5F, 0.5F, 0.5F);
 
-		int color = isTinyLinkHovered(mouseX, mouseY) ? 0x33BB33 : 0x009900;
-		font.drawShadow(matrixStack, this.patreon2, (this.width - font.width(this.patreon2) / 2 - font.width(this.patreon3) / 2) - 5, (this.height - font.lineHeight * 2 - 5), color);
-		font.drawShadow(matrixStack, this.patreon3, (this.width - font.width(this.patreon3)) - 5, (this.height - font.lineHeight * 2 - 5) + font.lineHeight, color);
+		int color = this.isTinyLinkHovered(mouseX, mouseY) ? 0x33BB33 : 0x009900;
+		this.font.drawShadow(matrixStack, this.patreon2, this.width - this.font.width(this.patreon2) / 2 - this.font.width(this.patreon3) / 2 - 5, this.height - this.font.lineHeight * 2 - 5, color);
+		this.font.drawShadow(matrixStack, this.patreon3, this.width - this.font.width(this.patreon3) - 5, this.height - this.font.lineHeight * 2 - 5 + this.font.lineHeight, color);
 
 		List<String> names = Supporters.INSTANCE.getSupporters();
 		int width = (int) (this.width * 0.66);
@@ -84,12 +84,12 @@ public class SupporterScreen extends Screen {
 		Component rendering = new TextComponent("");
 		for (int i = 0; i < names.size(); i++) {
 			String s = names.get(i);
-			rendering = new TranslatableComponent("%s %s", rendering, comp(i, s + "    "));
-			if ((strWidth = font.width(rendering)) >= width) {
-				font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + font.lineHeight), 0xCCCCCC);
+			rendering = new TranslatableComponent("%s %s", rendering, this.comp(i, s + "    "));
+			if ((strWidth = this.font.width(rendering)) >= width) {
+				this.font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC);
 				rendering = new TextComponent("");
 			} else if (i == names.size() - 1) {
-				font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + font.lineHeight), 0xCCCCCC);
+				this.font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC);
 			}
 		}
 
@@ -103,8 +103,8 @@ public class SupporterScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-		if (isBigLinkHovered((int) Math.round(pMouseX), (int) Math.round(pMouseY))) return this.handleComponentClicked(patreon.getStyle());
-		if (isTinyLinkHovered((int) Math.round(pMouseX), (int) Math.round(pMouseY))) return this.handleComponentClicked(patreon2.getStyle());
+		if (this.isBigLinkHovered((int) Math.round(pMouseX), (int) Math.round(pMouseY))) return this.handleComponentClicked(this.patreon.getStyle());
+		if (this.isTinyLinkHovered((int) Math.round(pMouseX), (int) Math.round(pMouseY))) return this.handleComponentClicked(this.patreon2.getStyle());
 		return super.mouseClicked(pMouseX, pMouseY, pButton);
 	}
 
@@ -114,7 +114,7 @@ public class SupporterScreen extends Screen {
 			int color = colorFades.get(index);
 			return comp.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));
 		} else {
-			if (rand.nextInt(1600) == 0) {
+			if (this.rand.nextInt(1600) == 0) {
 				colorFades.put(index, 0x9999FF);
 			}
 			return comp;
