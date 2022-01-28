@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.util.Strings;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -51,8 +52,10 @@ public class Logo {
 	public void draw(ExtendedMenuScreen screen, PoseStack stack) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, this.texture);
-		RenderSystem.disableDepthTest();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
+		RenderSystem.disableDepthTest();
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		stack.pushPose();
 		stack.translate(this.anchor.getX(screen), this.anchor.getY(screen), 0);
 		stack.scale((float) this.width / this.texWidth, (float) this.height / this.texHeight, 1);
@@ -71,6 +74,7 @@ public class Logo {
 		int texWidth = cfg.getInt("Texture Width", "logo", 300, 0, 500000, "The width of the logo's texture.");
 		int texHeight = cfg.getInt("Texture Height", "logo", 300, 0, 500000, "The height of the logo's texture.");
 		AnchorPoint anchor = AnchorPoint.valueOf(cfg.getString("Anchor Point", "logo", "DEFAULT_LOGO", "The anchor point of the logo.  The types of anchor points are available on the wiki."));
+		if (!cfg.getBoolean("Enable Logo", "logo", true, "If the logo is enabled or not.")) return null;
 		if (Strings.isBlank(tex)) return null;
 		return new Logo(xOff, yOff, width, height, texWidth, texHeight, new ResourceLocation(tex), anchor);
 	}

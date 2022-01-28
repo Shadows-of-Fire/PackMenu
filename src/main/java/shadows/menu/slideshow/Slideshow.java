@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -21,10 +22,12 @@ public class Slideshow {
 	private static int index = 0;
 	private static boolean fading = false;
 
-	@SuppressWarnings("deprecation")
 	public static void render(ExtendedMenuScreen screen, PoseStack stack, float partialTicks) {
 		Minecraft mc = screen.getMinecraft();
-		mc.getTextureManager().bindForSetup(PackMenuClient.slideshowTextures.get(index));
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShaderTexture(0, PackMenuClient.slideshowTextures.get(index));
+		RenderSystem.enableBlend();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
 		GuiComponent.blit(stack, 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
 		if (fading) {

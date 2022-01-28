@@ -1,11 +1,23 @@
+## 4.0.1
+* Added an explicit disable option for the logo.
+* Fixed logo not drawing with translucency.
+* Fixed slideshow not drawing at all.
+
+## 4.0.0
+* Initial update to 1.18.1
+
 ## 3.0.0
 * Initial update to 1.17.1
+
 ## 2.5.0
 * Added the Supporters Screen, where you can display the names of those who support you and a link to a donation page.
+
 ## 2.4.2
 * Allow buttons to specify hover text
+
 ## 2.4.1
 * Fix arbitrary scaling not working.  Previously only 1/n where n is an integer scaling worked properly.  Scaling may still have issues in some random cases.
+
 ## 2.4.0
 * Added a REALMS action so that clients with PackMenu can connect to realms once more.
 * Made it so that multiple panoramas can be specified.  One will be chosen at random during resource reload.
