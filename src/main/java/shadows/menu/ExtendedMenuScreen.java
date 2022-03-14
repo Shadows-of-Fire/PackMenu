@@ -1,5 +1,6 @@
 package shadows.menu;
 
+import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,11 +14,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screens.LanguageSelectScreen;
 import net.minecraft.client.gui.screens.OptionsScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.WinScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -54,6 +57,12 @@ public class ExtendedMenuScreen extends TitleScreen {
 		});
 
 		this.minecraft.setConnectedToRealms(false);
+
+		int txtWidth = this.font.width(COPYRIGHT_TEXT);
+		int leftPos = this.width - txtWidth - 2;
+		this.addRenderableWidget(new PlainTextButton(leftPos, this.height - 10, txtWidth, 10, COPYRIGHT_TEXT, (p_211790_) -> {
+			this.minecraft.setScreen(new WinScreen(false, Runnables.doNothing()));
+		}, this.font));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -139,10 +148,6 @@ public class ExtendedMenuScreen extends TitleScreen {
 			BrandingControl.forEachLine(true, true, (brdline, brd) -> drawString(stack, this.getFont(), brd, 2, this.height - (10 + brdline * (this.getFont().lineHeight + 1)), 16777215 | l));
 
 			BrandingControl.forEachAboveCopyrightLine((brdline, brd) -> drawString(stack, this.getFont(), brd, this.width - this.getFont().width(brd), this.height - (10 + (brdline + 1) * (this.getFont().lineHeight + 1)), 16777215 | l));
-			drawString(stack, this.getFont(), "Copyright Mojang AB. Do not distribute!", this.copyrightX, this.height - 10, 16777215 | l);
-			if (mouseX > this.copyrightX && mouseX < this.copyrightX + this.copyrightWidth && mouseY > this.height - 10 && mouseY < this.height) {
-				fill(stack, this.copyrightX, this.height - 1, this.copyrightX + this.copyrightWidth, this.height, 16777215 | l);
-			}
 			// modUpdateNotification.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 		}
 	}
