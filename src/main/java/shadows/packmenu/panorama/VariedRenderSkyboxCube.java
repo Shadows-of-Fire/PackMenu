@@ -1,4 +1,4 @@
-package shadows.menu.panorama;
+package shadows.packmenu.panorama;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -6,7 +6,7 @@ import java.util.concurrent.Executor;
 import net.minecraft.client.renderer.CubeMap;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import shadows.menu.PackMenuClient;
+import shadows.packmenu.PackMenuClient;
 
 public class VariedRenderSkyboxCube extends CubeMap {
 

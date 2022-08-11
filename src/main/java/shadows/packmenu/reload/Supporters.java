@@ -1,4 +1,4 @@
-package shadows.menu.reload;
+package shadows.packmenu.reload;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import shadows.menu.PackMenu;
+import shadows.packmenu.PackMenu;
 
 public class Supporters extends SimplePreparableReloadListener<List<String>> {
 

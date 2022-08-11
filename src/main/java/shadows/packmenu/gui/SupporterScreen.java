@@ -1,4 +1,4 @@
-package shadows.menu.gui;
+package shadows.packmenu.gui;
 
 import java.util.List;
 import java.util.Random;
@@ -23,9 +23,9 @@ import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import shadows.menu.PackMenu;
-import shadows.menu.PackMenuClient;
-import shadows.menu.reload.Supporters;
+import shadows.packmenu.PackMenu;
+import shadows.packmenu.PackMenuClient;
+import shadows.packmenu.reload.Supporters;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = PackMenu.MODID)
 public class SupporterScreen extends Screen {

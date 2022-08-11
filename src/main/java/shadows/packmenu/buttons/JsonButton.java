@@ -1,4 +1,4 @@
-package shadows.menu.buttons;
+package shadows.packmenu.buttons;
 
 import java.util.Locale;
 
@@ -18,7 +18,7 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import shadows.menu.ExtendedMenuScreen;
+import shadows.packmenu.ExtendedMenuScreen;
 
 public class JsonButton extends Button {
 

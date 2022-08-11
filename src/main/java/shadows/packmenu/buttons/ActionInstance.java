@@ -1,4 +1,4 @@
-package shadows.menu.buttons;
+package shadows.packmenu.buttons;
 
 import javax.annotation.Nullable;
 

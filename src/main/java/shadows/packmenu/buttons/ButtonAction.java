@@ -1,4 +1,4 @@
-package shadows.menu.buttons;
+package shadows.packmenu.buttons;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,7 +16,7 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import shadows.menu.PackMenuClient;
+import shadows.packmenu.PackMenuClient;
 
 @SuppressWarnings("deprecation")
 public enum ButtonAction {

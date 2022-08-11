@@ -1,4 +1,4 @@
-package shadows.menu.logo;
+package shadows.packmenu.logo;
 
 import javax.annotation.Nullable;
 
@@ -11,8 +11,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
-import shadows.menu.ExtendedMenuScreen;
-import shadows.menu.buttons.AnchorPoint;
+import shadows.packmenu.ExtendedMenuScreen;
+import shadows.packmenu.buttons.AnchorPoint;
 import shadows.placebo.config.Configuration;
 
 public class Logo {

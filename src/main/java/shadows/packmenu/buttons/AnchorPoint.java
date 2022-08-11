@@ -1,8 +1,8 @@
-package shadows.menu.buttons;
+package shadows.packmenu.buttons;
 
 import java.util.function.Function;
 
-import shadows.menu.ExtendedMenuScreen;
+import shadows.packmenu.ExtendedMenuScreen;
 
 public enum AnchorPoint {
 	TOP_LEFT(s -> 0, s -> 0),

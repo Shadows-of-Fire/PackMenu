@@ -1,4 +1,7 @@
-## 4.0.1
+## 4.1.1
+* Added a potential fix for the panorama loading the vanilla panorama.
+
+## 4.1.0
 * Added an explicit disable option for the logo.
 * Fixed logo not drawing with translucency.
 * Fixed slideshow not drawing at all.

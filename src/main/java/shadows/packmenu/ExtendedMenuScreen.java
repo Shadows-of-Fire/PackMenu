@@ -1,4 +1,4 @@
-package shadows.menu;
+package shadows.packmenu;
 
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -32,8 +32,8 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.gui.ModListScreen;
 import net.minecraftforge.internal.BrandingControl;
-import shadows.menu.buttons.JsonButton;
-import shadows.menu.slideshow.Slideshow;
+import shadows.packmenu.buttons.JsonButton;
+import shadows.packmenu.slideshow.Slideshow;
 
 public class ExtendedMenuScreen extends TitleScreen {
 

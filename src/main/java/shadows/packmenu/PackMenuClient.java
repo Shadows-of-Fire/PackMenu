@@ -1,4 +1,4 @@
-package shadows.menu;
+package shadows.packmenu;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,12 +30,12 @@ import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import shadows.menu.buttons.AnchorPoint;
-import shadows.menu.logo.Logo;
-import shadows.menu.panorama.VariedRenderSkyboxCube;
-import shadows.menu.reload.ButtonManager;
-import shadows.menu.reload.Supporters;
-import shadows.menu.slideshow.Slideshow;
+import shadows.packmenu.buttons.AnchorPoint;
+import shadows.packmenu.logo.Logo;
+import shadows.packmenu.panorama.VariedRenderSkyboxCube;
+import shadows.packmenu.reload.ButtonManager;
+import shadows.packmenu.reload.Supporters;
+import shadows.packmenu.slideshow.Slideshow;
 import shadows.placebo.config.Configuration;
 import shadows.placebo.util.RunnableReloader;
 
@@ -45,11 +45,6 @@ public class PackMenuClient {
 	public static final File FOLDER_PACK = new File(FMLPaths.GAMEDIR.get().toFile(), "packmenu/resources");
 	public static final ButtonManager BUTTON_MANAGER = new ButtonManager();
 
-	static {
-		TitleScreen.CUBE_MAP = new VariedRenderSkyboxCube(new ResourceLocation("textures/gui/title/background/panorama"));
-	}
-
-	public static final VariedRenderSkyboxCube PANORAMA_RESOURCES = (VariedRenderSkyboxCube) TitleScreen.CUBE_MAP;
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
 	public static boolean drawJavaEd = true;
@@ -142,7 +137,7 @@ public class PackMenuClient {
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(BUTTON_MANAGER);
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new RunnableReloader(() -> {
 			int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
-			PANORAMA_RESOURCES.setVariation(var);
+			((VariedRenderSkyboxCube) TitleScreen.CUBE_MAP).setVariation(var);
 		}));
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(Supporters.INSTANCE);
 	}
@@ -183,6 +178,8 @@ public class PackMenuClient {
 		panoramaFade = cfg.getBoolean("Panorama Fade In", "general", panoramaFade, "If the Panorama has a fade-in effect.");
 		panoramaSpeed = cfg.getFloat("Panorama Speed", "general", 1, 0.01F, 100F, "A multiplier on panorama speed.");
 		panoramaVariations = cfg.getInt("Panorama Variations", "general", panoramaVariations, 1, 10, "The number of variations of panorama that exist.  Panorama files other than the original set must have the form panorama<y>_<z>.png.  For example the first file of varation #2 would be panorama1_0.png");
+		int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
+		((VariedRenderSkyboxCube) TitleScreen.CUBE_MAP).setVariation(var);
 		PackMenuClient.slideshow = !slideshowTextures.isEmpty();
 		Slideshow.reset();
 		patreonUrl = cfg.getString("Patreon Url", "support", patreonUrl, "The URL that the link on the supporters page goes to.");

@@ -1,4 +1,4 @@
-package shadows.menu.reload;
+package shadows.packmenu.reload;
 
 import java.util.Collection;
 import java.util.Map;
@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import shadows.menu.PackMenu;
-import shadows.menu.buttons.JsonButton;
+import shadows.packmenu.PackMenu;
+import shadows.packmenu.buttons.JsonButton;
 
 public class ButtonManager extends SimpleJsonResourceReloadListener {
 

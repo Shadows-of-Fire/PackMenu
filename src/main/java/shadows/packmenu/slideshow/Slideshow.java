@@ -1,4 +1,4 @@
-package shadows.menu.slideshow;
+package shadows.packmenu.slideshow;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -11,9 +11,9 @@ import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import shadows.menu.ExtendedMenuScreen;
-import shadows.menu.PackMenu;
-import shadows.menu.PackMenuClient;
+import shadows.packmenu.ExtendedMenuScreen;
+import shadows.packmenu.PackMenu;
+import shadows.packmenu.PackMenuClient;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = PackMenu.MODID)
 public class Slideshow {

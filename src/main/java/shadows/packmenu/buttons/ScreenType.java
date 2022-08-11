@@ -1,4 +1,4 @@
-package shadows.menu.buttons;
+package shadows.packmenu.buttons;
 
 import java.util.function.Function;
 
@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.gui.ModListScreen;
-import shadows.menu.gui.SupporterScreen;
+import shadows.packmenu.gui.SupporterScreen;
 
 public enum ScreenType implements Function<Screen, Screen> {
 	SINGLEPLAYER(SelectWorldScreen::new),
