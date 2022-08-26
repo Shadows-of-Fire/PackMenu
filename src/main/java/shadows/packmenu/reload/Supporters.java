@@ -2,8 +2,6 @@ package shadows.packmenu.reload;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +10,6 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -30,12 +27,14 @@ public class Supporters extends SimplePreparableReloadListener<List<String>> {
 
 	@Override
 	protected List<String> prepare(ResourceManager p_212854_1_, ProfilerFiller p_212854_2_) {
-		try (Resource iresource = Minecraft.getInstance().getResourceManager().getResource(TEXT_LOCATION);
-				BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8));) {
-			return bufferedreader.lines().map(String::trim).filter(p_215277_0_ -> (p_215277_0_.hashCode() != 125780783)).collect(Collectors.toList());
-		} catch (IOException ioexception) {
-			return Collections.emptyList();
-		}
+		return Minecraft.getInstance().getResourceManager().getResource(TEXT_LOCATION).<List<String>>map(r -> {
+			try (BufferedReader bufferedreader = r.openAsReader()) {
+				return bufferedreader.lines().map(String::trim).filter(p_215277_0_ -> (p_215277_0_.hashCode() != 125780783)).collect(Collectors.toList());
+			} catch (IOException ioexception) {
+				return Collections.emptyList();
+			}
+		}).orElse(Collections.emptyList());
+
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import shadows.packmenu.ExtendedMenuScreen;
 
@@ -83,7 +82,7 @@ public class JsonButton extends Button {
 	protected Component hoverMessage;
 
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
-		super(xPos, yPos, width, height, new TranslatableComponent(langKey), handler, Button.NO_TOOLTIP);
+		super(xPos, yPos, width, height, Component.translatable(langKey), handler, Button.NO_TOOLTIP);
 		handler.setSource(this);
 		this.xOff = xPos;
 		this.yOff = yPos;
@@ -122,8 +121,8 @@ public class JsonButton extends Button {
 	public JsonButton setup(ExtendedMenuScreen screen) {
 		this.x = this.xOff + this.anchor.getX(screen);
 		this.y = this.yOff + this.anchor.getY(screen);
-		this.setMessage(new TranslatableComponent(this.langKey));
-		this.hoverMessage = new TranslatableComponent(this.hoverKey);
+		this.setMessage(Component.translatable(this.langKey));
+		this.hoverMessage = Component.translatable(this.hoverKey);
 		return this;
 	}
 

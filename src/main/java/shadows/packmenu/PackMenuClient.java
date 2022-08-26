@@ -26,18 +26,18 @@ import net.minecraft.server.packs.repository.Pack.PackConstructor;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraftforge.client.event.ScreenOpenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
+import repack.shadows.placebo.config.Configuration;
+import repack.shadows.placebo.util.RunnableReloader;
 import shadows.packmenu.buttons.AnchorPoint;
 import shadows.packmenu.logo.Logo;
 import shadows.packmenu.panorama.VariedRenderSkyboxCube;
 import shadows.packmenu.reload.ButtonManager;
 import shadows.packmenu.reload.Supporters;
 import shadows.packmenu.slideshow.Slideshow;
-import shadows.placebo.config.Configuration;
-import shadows.placebo.util.RunnableReloader;
 
 public class PackMenuClient {
 
@@ -143,9 +143,9 @@ public class PackMenuClient {
 	}
 
 	@SubscribeEvent
-	public void hijackMenu(ScreenOpenEvent e) {
+	public void hijackMenu(ScreenEvent.Opening e) {
 		if (e.getScreen() != null && e.getScreen().getClass() == TitleScreen.class) {
-			e.setScreen(new ExtendedMenuScreen(panoramaFade));
+			e.setNewScreen(new ExtendedMenuScreen(panoramaFade));
 		}
 	}
 

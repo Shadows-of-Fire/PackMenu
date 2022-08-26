@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.gui.ModListScreen;
 import shadows.packmenu.gui.SupporterScreen;
 
@@ -43,7 +43,7 @@ public enum ScreenType implements Function<Screen, Screen> {
 			Minecraft mc = Minecraft.getInstance();
 			OptionsScreen optScn = new OptionsScreen(t, mc.options);
 			optScn.init(mc, 40, 40);
-			return new PackSelectionScreen(t, mc.getResourcePackRepository(), optScn::updatePackList, mc.getResourcePackDirectory(), new TranslatableComponent("resourcePack.title"));
+			return new PackSelectionScreen(t, mc.getResourcePackRepository(), optScn::updatePackList, mc.getResourcePackDirectory(), Component.translatable("resourcePack.title"));
 		}
 
 	}

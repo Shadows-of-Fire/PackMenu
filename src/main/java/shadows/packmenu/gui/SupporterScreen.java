@@ -14,10 +14,9 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.ClickEvent.Action;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -39,12 +38,12 @@ public class SupporterScreen extends Screen {
 	protected final Component patreon, patreon2, patreon3;
 
 	public SupporterScreen(Screen parent) {
-		super(new TranslatableComponent("packmenu.supporters"));
+		super(Component.translatable("packmenu.supporters"));
 		this.parent = parent;
 		colorFades.defaultReturnValue(-1);
-		this.patreon = new TranslatableComponent("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
-		this.patreon2 = new TranslatableComponent("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
-		this.patreon3 = new TranslatableComponent("packmenu.support1");
+		this.patreon = Component.translatable("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
+		this.patreon2 = Component.translatable("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
+		this.patreon3 = Component.translatable("packmenu.support1");
 	}
 
 	@Override
@@ -81,13 +80,13 @@ public class SupporterScreen extends Screen {
 		int width = (int) (this.width * 0.66);
 		int strWidth = 0;
 		int renders = 3;
-		Component rendering = new TextComponent("");
+		Component rendering = Component.literal("");
 		for (int i = 0; i < names.size(); i++) {
 			String s = names.get(i);
-			rendering = new TranslatableComponent("%s %s", rendering, this.comp(i, s + "    "));
+			rendering = Component.translatable("%s %s", rendering, this.comp(i, s + "    "));
 			if ((strWidth = this.font.width(rendering)) >= width) {
 				this.font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC);
-				rendering = new TextComponent("");
+				rendering = Component.literal("");
 			} else if (i == names.size() - 1) {
 				this.font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC);
 			}
@@ -109,7 +108,7 @@ public class SupporterScreen extends Screen {
 	}
 
 	Component comp(int index, String s) {
-		TextComponent comp = new TextComponent(s);
+		MutableComponent comp = Component.literal(s);
 		if (colorFades.get(index) != -1) {
 			int color = colorFades.get(index);
 			return comp.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(color)));

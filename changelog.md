@@ -1,3 +1,6 @@
+## 5.0.0
+* Alpha port to 1.19.2
+
 ## 4.1.1
 * Added a potential fix for the panorama loading the vanilla panorama.
 

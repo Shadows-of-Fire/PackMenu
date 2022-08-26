@@ -84,7 +84,7 @@ public enum ButtonAction {
 			if (data.ip.equals(ip)) return data;
 		}
 		ServerData data = new ServerData("Packmenu Managed Server", ip, false);
-		list.add(data);
+		list.add(data, true);
 		list.save();
 		return data;
 	}

@@ -26,7 +26,7 @@ import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PanoramaRenderer;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -167,44 +167,44 @@ public class ExtendedMenuScreen extends TitleScreen {
 		int buttonWidth = this.width / 2;
 
 		//Singleplayer Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight, 200, 20, new TranslatableComponent("menu.singleplayer"), p_213089_1_ -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight, 200, 20, Component.translatable("menu.singleplayer"), p_213089_1_ -> {
 			this.minecraft.setScreen(new SelectWorldScreen(this));
 		}));
 
 		//Multiplayer Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 1, 200, 20, new TranslatableComponent("menu.multiplayer"), p_213086_1_ -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 1, 200, 20, Component.translatable("menu.multiplayer"), p_213086_1_ -> {
 			this.minecraft.setScreen(new JoinMultiplayerScreen(this));
 		}));
 
 		//Realms Button
-		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, new TranslatableComponent("menu.online"), p_213095_1_ -> {
+		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 24 * 2, 98, 20, Component.translatable("menu.online"), p_213095_1_ -> {
 			Minecraft.getInstance().setScreen(new RealmsMainScreen(Minecraft.getInstance().screen));
 		}));
 
 		//Mods Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 2, 98, 20, new TranslatableComponent("fml.menu.mods"), button -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 24 * 2, 98, 20, Component.translatable("fml.menu.mods"), button -> {
 			this.minecraft.setScreen(new ModListScreen(this));
 		}));
 
 		//Language Button
 		this.addRenderableWidget(new ImageButton(buttonWidth - 124, buttonHeight + 72 + 12, 20, 20, 0, 106, 20, AbstractWidget.WIDGETS_LOCATION, 256, 256, p_213090_1_ -> {
 			this.minecraft.setScreen(new LanguageSelectScreen(this, this.minecraft.options, this.minecraft.getLanguageManager()));
-		}, new TranslatableComponent("narrator.button.language")));
+		}, Component.translatable("narrator.button.language")));
 
 		//Options Button
-		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.options"), p_213096_1_ -> {
+		this.addRenderableWidget(new Button(buttonWidth - 100, buttonHeight + 72 + 12, 98, 20, Component.translatable("menu.options"), p_213096_1_ -> {
 			this.minecraft.setScreen(new OptionsScreen(this, this.minecraft.options));
 		}));
 
 		//Quit Button
-		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 72 + 12, 98, 20, new TranslatableComponent("menu.quit"), p_213094_1_ -> {
+		this.addRenderableWidget(new Button(buttonWidth + 2, buttonHeight + 72 + 12, 98, 20, Component.translatable("menu.quit"), p_213094_1_ -> {
 			this.minecraft.stop();
 		}));
 
 		//Accessibility Options Button
 		this.addRenderableWidget(new ImageButton(buttonWidth + 104, buttonHeight + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_TEXTURE, 32, 64, p_213088_1_ -> {
 			this.minecraft.setScreen(new AccessibilityOptionsScreen(this, this.minecraft.options));
-		}, new TranslatableComponent("narrator.button.accessibility")));
+		}, Component.translatable("narrator.button.accessibility")));
 	}
 
 	public Font getFont() {
