@@ -1,3 +1,6 @@
+## 4.1.2
+* Added a better fix for the panorama thing.  Finally avoids all race conditions.
+
 ## 4.1.1
 * Added a potential fix for the panorama loading the vanilla panorama.
 
