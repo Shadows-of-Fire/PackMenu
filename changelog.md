@@ -1,3 +1,6 @@
+## 5.0.1
+* Mixin fix
+
 ## 5.0.0
 * Alpha port to 1.19.2
 
