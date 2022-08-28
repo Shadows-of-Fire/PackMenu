@@ -33,12 +33,15 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.gui.ModListScreen;
 import net.minecraftforge.internal.BrandingControl;
 import shadows.packmenu.buttons.JsonButton;
+import shadows.packmenu.panorama.VariedCubeMap;
 import shadows.packmenu.slideshow.Slideshow;
 
 public class ExtendedMenuScreen extends TitleScreen {
 
 	public static final ResourceLocation BACKGROUND = new ResourceLocation(PackMenu.MODID, "textures/gui/background.png");
-	public final PanoramaRenderer panorama = new PanoramaRenderer(CUBE_MAP);
+	public static VariedCubeMap VARIED_CUBE_MAP = new VariedCubeMap(new ResourceLocation("textures/gui/title/background/panorama"));
+
+	public final PanoramaRenderer panorama = new PanoramaRenderer(VARIED_CUBE_MAP);
 
 	public ExtendedMenuScreen(boolean fade) {
 		super(fade);

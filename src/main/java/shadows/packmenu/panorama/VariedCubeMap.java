@@ -8,11 +8,11 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import shadows.packmenu.PackMenuClient;
 
-public class VariedRenderSkyboxCube extends CubeMap {
+public class VariedCubeMap extends CubeMap {
 
 	private final ResourceLocation[][] locations = new ResourceLocation[10][6];
 
-	public VariedRenderSkyboxCube(ResourceLocation texture) {
+	public VariedCubeMap(ResourceLocation texture) {
 		super(texture);
 
 		for (int i = 0; i < 6; ++i) {
