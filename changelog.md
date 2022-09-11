@@ -1,3 +1,6 @@
+## 4.1.3
+* Backported the proper panorama fix from 1.19.
+
 ## 4.1.2
 * Added a better fix for the panorama thing.  Finally avoids all race conditions.
 

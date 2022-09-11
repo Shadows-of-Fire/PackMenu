@@ -32,7 +32,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import shadows.packmenu.buttons.AnchorPoint;
 import shadows.packmenu.logo.Logo;
-import shadows.packmenu.panorama.VariedRenderSkyboxCube;
 import shadows.packmenu.reload.ButtonManager;
 import shadows.packmenu.reload.Supporters;
 import shadows.packmenu.slideshow.Slideshow;
@@ -137,7 +136,7 @@ public class PackMenuClient {
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(BUTTON_MANAGER);
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(new RunnableReloader(() -> {
 			int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
-			((VariedRenderSkyboxCube) TitleScreen.CUBE_MAP).setVariation(var);
+			ExtendedMenuScreen.VARIED_CUBE_MAP.setVariation(var);
 		}));
 		((ReloadableResourceManager) Minecraft.getInstance().getResourceManager()).registerReloadListener(Supporters.INSTANCE);
 	}
@@ -179,7 +178,7 @@ public class PackMenuClient {
 		panoramaSpeed = cfg.getFloat("Panorama Speed", "general", 1, 0.01F, 100F, "A multiplier on panorama speed.");
 		panoramaVariations = cfg.getInt("Panorama Variations", "general", panoramaVariations, 1, 10, "The number of variations of panorama that exist.  Panorama files other than the original set must have the form panorama<y>_<z>.png.  For example the first file of varation #2 would be panorama1_0.png");
 		int var = ThreadLocalRandom.current().nextInt(panoramaVariations);
-		((VariedRenderSkyboxCube) TitleScreen.CUBE_MAP).setVariation(var);
+		ExtendedMenuScreen.VARIED_CUBE_MAP.setVariation(var);
 		PackMenuClient.slideshow = !slideshowTextures.isEmpty();
 		Slideshow.reset();
 		patreonUrl = cfg.getString("Patreon Url", "support", patreonUrl, "The URL that the link on the supporters page goes to.");
