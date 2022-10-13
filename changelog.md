@@ -1,3 +1,8 @@
+## 5.1.0
+* Proper port to 1.19.2
+* Removed shadowed Placebo code and reintroduced dependency now that Placebo has been updated.
+* Fixed slideshow fade not working.
+
 ## 5.0.2
 * Mixin fix for real this time, maybe.
 

@@ -30,13 +30,13 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import repack.shadows.placebo.config.Configuration;
-import repack.shadows.placebo.util.RunnableReloader;
 import shadows.packmenu.buttons.AnchorPoint;
 import shadows.packmenu.logo.Logo;
 import shadows.packmenu.reload.ButtonManager;
 import shadows.packmenu.reload.Supporters;
 import shadows.packmenu.slideshow.Slideshow;
+import shadows.placebo.config.Configuration;
+import shadows.placebo.util.RunnableReloader;
 
 public class PackMenuClient {
 

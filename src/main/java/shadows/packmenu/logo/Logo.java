@@ -11,9 +11,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
-import repack.shadows.placebo.config.Configuration;
 import shadows.packmenu.ExtendedMenuScreen;
 import shadows.packmenu.buttons.AnchorPoint;
+import shadows.placebo.config.Configuration;
 
 public class Logo {
 
