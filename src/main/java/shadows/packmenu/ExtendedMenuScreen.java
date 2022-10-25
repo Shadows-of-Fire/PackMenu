@@ -89,6 +89,7 @@ public class ExtendedMenuScreen extends TitleScreen {
 		} else {
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, BACKGROUND);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
 			blit(stack, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		}
 
