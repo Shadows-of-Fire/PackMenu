@@ -197,16 +197,16 @@ public class JsonButton extends Button {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, this.texture);
 		RenderSystem.disableDepthTest();
-		int x = this.u, y = this.v;
+		int u = this.u, v = this.v;
 		if (this.isHoveredOrFocused()) {
-			x = this.hoverU;
-			y = this.hoverV;
+			u = this.hoverU;
+			v = this.hoverV;
 		}
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		stack.pushPose();
 		stack.scale(this.scaleX, this.scaleY, 1);
-		blit(stack, Math.round(this.x / this.scaleX), Math.round(this.y / this.scaleY), x, y, Math.round(this.width / this.scaleX), Math.round(this.height / this.scaleY), this.texWidth, this.texHeight);
+		blit(stack, Math.round(this.x / this.scaleX), Math.round(this.y / this.scaleY), u, v, Math.round(this.width / this.scaleX), Math.round(this.height / this.scaleY), this.texWidth, this.texHeight);
 		stack.popPose();
 		RenderSystem.enableDepthTest();
 		this.renderText(stack);
