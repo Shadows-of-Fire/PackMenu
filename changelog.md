@@ -1,3 +1,6 @@
+## 6.0.0
+* Updated to 1.20.1.
+
 ## 5.1.0
 * Proper port to 1.19.2
 * Removed shadowed Placebo code and reintroduced dependency now that Placebo has been updated.
