@@ -1,5 +1,6 @@
 package shadows.packmenu.buttons;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import net.minecraft.client.Minecraft;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraftforge.client.gui.ModListScreen;
 import shadows.packmenu.gui.SupporterScreen;
 
@@ -43,7 +45,13 @@ public enum ScreenType implements Function<Screen, Screen> {
 			Minecraft mc = Minecraft.getInstance();
 			OptionsScreen optScn = new OptionsScreen(t, mc.options);
 			optScn.init(mc, 40, 40);
-			return new PackSelectionScreen(t, mc.getResourcePackRepository(), optScn::updatePackList, mc.getResourcePackDirectory(), Component.translatable("resourcePack.title"));
+
+			Consumer<PackRepository> applyPacks = repo -> {
+				mc.options.updateResourcePacks(repo);
+				mc.setScreen(t);
+			};
+
+			return new PackSelectionScreen(mc.getResourcePackRepository(), applyPacks, mc.getResourcePackDirectory(), Component.translatable("resourcePack.title"));
 		}
 
 	}

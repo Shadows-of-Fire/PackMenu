@@ -6,11 +6,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import joptsimple.internal.Strings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -82,7 +82,7 @@ public class JsonButton extends Button {
 	protected Component hoverMessage;
 
 	public JsonButton(int xPos, int yPos, int width, int height, int fontColor, int hoverFontColor, String langKey, ActionInstance handler) {
-		super(xPos, yPos, width, height, Component.translatable(langKey), handler, Button.NO_TOOLTIP);
+		super(xPos, yPos, width, height, Component.translatable(langKey), handler, Button.DEFAULT_NARRATION);
 		handler.setSource(this);
 		this.xOff = xPos;
 		this.yOff = yPos;
@@ -119,8 +119,8 @@ public class JsonButton extends Button {
 	}
 
 	public JsonButton setup(ExtendedMenuScreen screen) {
-		this.x = this.xOff + this.anchor.getX(screen);
-		this.y = this.yOff + this.anchor.getY(screen);
+		this.setX(this.xOff + this.anchor.getX(screen));
+		this.setY(this.yOff + this.anchor.getY(screen));
 		this.setMessage(Component.translatable(this.langKey));
 		this.hoverMessage = Component.translatable(this.hoverKey);
 		return this;
@@ -154,45 +154,51 @@ public class JsonButton extends Button {
 	 * Draws this button to the screen.
 	 */
 	@Override
-	public void renderButton(PoseStack stack, int mouseX, int mouseY, float partial) {
+	public void renderWidget(GuiGraphics stack, int mouseX, int mouseY, float partial) {
 		if (this.visible) {
 			if (this.usesWidgets) this.renderWidgetButton(stack, mouseX, mouseY, partial);
 			else this.renderImageButton(stack, mouseX, mouseY, partial);
 		}
 	}
 
-	public static void drawCenteredStringNoShadow(PoseStack stack, Font font, String string, int x, int y, int color) {
-		font.draw(stack, string, x - font.width(string) / 2, y, color);
+	public static void drawCenteredStringNoShadow(GuiGraphics stack, Font font, String string, int x, int y, int color) {
+		stack.drawString(font, string, x - font.width(string) / 2, y, color, false);
 	}
 
-	public void drawCenteredString0(PoseStack stack, Font font, String string, int x, int y, int color) {
-		if (this.dropShadow) super.drawCenteredString(stack, font, string, x, y, color);
+	protected void drawCenteredString(GuiGraphics stack, Font font, String string, int x, int y, int color) {
+		if (this.dropShadow) stack.drawCenteredString(font, string, x, y, color);
 		else drawCenteredStringNoShadow(stack, font, string, x, y, color);
+	}
+
+	protected int getVIndex(boolean pIsHovered) {
+		int i = 1;
+		if (!this.active) {
+			i = 0;
+		} else if (pIsHovered) {
+			i = 2;
+		}
+
+		return i;
 	}
 
 	/**
 	 * Renders this button as if it was a default button based on the widgets texture (automatic scaling)
 	 */
-	@SuppressWarnings("deprecation")
-	private void renderWidgetButton(PoseStack stack, int mouseX, int mouseY, float partial) {
-		Minecraft mc = Minecraft.getInstance();
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, this.texture);
+	private void renderWidgetButton(GuiGraphics stack, int mouseX, int mouseY, float partial) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-		int i = this.getYImage(this.isHoveredOrFocused());
+		int i = this.getVIndex(this.isHoveredOrFocused());
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		this.blit(stack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-		this.blit(stack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-		this.renderBg(stack, mc, mouseX, mouseY);
+		stack.blit(this.texture, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+		stack.blit(this.texture, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderText(stack);
 	}
 
 	/**
 	 * Renders this button as if it was an image button.
 	 */
-	private void renderImageButton(PoseStack stack, int mouseX, int mouseY, float partial) {
-		this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+	private void renderImageButton(GuiGraphics stack, int mouseX, int mouseY, float partial) {
+		this.isHovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, this.texture);
 		RenderSystem.disableDepthTest();
@@ -203,41 +209,37 @@ public class JsonButton extends Button {
 		}
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		stack.pushPose();
-		stack.scale(this.scaleX, this.scaleY, 1);
-		blit(stack, Math.round(this.x / this.scaleX), Math.round(this.y / this.scaleY), x, y, Math.round(this.width / this.scaleX), Math.round(this.height / this.scaleY), this.texWidth, this.texHeight);
-		stack.popPose();
+		stack.pose().pushPose();
+		stack.pose().scale(this.scaleX, this.scaleY, 1);
+		stack.blit(this.texture, Math.round(this.getX() / this.scaleX), Math.round(this.getY() / this.scaleY), x, y, Math.round(this.width / this.scaleX), Math.round(this.height / this.scaleY), this.texWidth, this.texHeight);
+		stack.pose().popPose();
 		RenderSystem.enableDepthTest();
 		this.renderText(stack);
 	}
 
-	protected void renderText(PoseStack stack) {
+	protected void renderText(GuiGraphics stack) {
 		Minecraft mc = Minecraft.getInstance();
 		int color = this.getFGColor();
 		String buttonText = this.getMessage().getString();
 		int strWidth = mc.font.width(buttonText);
 		if (strWidth <= this.width - 6) {
-			this.drawCenteredString0(stack, mc.font, buttonText, this.x + this.width / 2 + this.textXOff, this.y + this.height / 2 + this.textYOff, color);
+			this.drawCenteredString(stack, mc.font, buttonText, this.getX() + this.width / 2 + this.textXOff, this.getY() + this.height / 2 + this.textYOff, color);
 		} else if (!this.isHovered) {
 			this.scrollCounter = 0;
 			int ellipsisWidth = mc.font.width("...");
 			if (strWidth > ellipsisWidth) buttonText = this.trimStringToWidth(this.getMessage(), this.width - 6 - ellipsisWidth).getString().trim() + "...";
-			this.drawCenteredString0(stack, mc.font, buttonText, this.x + this.width / 2 + this.textXOff, this.y + this.height / 2 + this.textYOff, color);
+			this.drawCenteredString(stack, mc.font, buttonText, this.getX() + this.width / 2 + this.textXOff, this.getY() + this.height / 2 + this.textYOff, color);
 		} else {
 			int halfLen = mc.font.width(buttonText + "      ");
 			buttonText += "      " + buttonText;
-			stack.pushPose();
+			stack.pose().pushPose();
 			double d0 = mc.getWindow().getGuiScale();
-			float y = Minecraft.getInstance().screen.height - this.y - this.height;
-			RenderSystem.enableScissor((int) (this.x * d0), (int) (y * d0), (int) (d0 * this.width), (int) (d0 * this.height));
-			stack.translate((-this.scrollCounter - mc.getDeltaFrameTime()) % halfLen, 0, 0);
-			if (this.dropShadow) {
-				mc.font.drawShadow(stack, buttonText, this.x + this.width / 8 + this.textXOff, this.y + this.height / 2 + this.textYOff, color);
-			} else {
-				mc.font.draw(stack, buttonText, this.x + this.width / 8 + this.textXOff, this.y + this.height / 2 + this.textYOff, color);
-			}
+			float y = Minecraft.getInstance().screen.height - this.getY() - this.height;
+			RenderSystem.enableScissor((int) (this.getX() * d0), (int) (y * d0), (int) (d0 * this.width), (int) (d0 * this.height));
+			stack.pose().translate((-this.scrollCounter - mc.getDeltaFrameTime()) % halfLen, 0, 0);
+			stack.drawString(mc.font, buttonText, this.getX() + this.width / 8 + this.textXOff, this.getY() + this.height / 2 + this.textYOff, color, this.dropShadow);
 			RenderSystem.disableScissor();
-			stack.popPose();
+			stack.pose().popPose();
 		}
 	}
 

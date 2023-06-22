@@ -3,11 +3,10 @@ package shadows.packmenu.gui;
 import java.util.List;
 import java.util.Random;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
@@ -48,9 +47,9 @@ public class SupporterScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.addRenderableWidget(new Button(5, this.height - 25, 40, 20, CommonComponents.GUI_BACK, p_213056_1_ -> {
+		this.addRenderableWidget(new Button.Builder(CommonComponents.GUI_BACK, p_213056_1_ -> {
 			this.minecraft.setScreen(this.parent);
-		}));
+		}).bounds(5, this.height - 25, 40, 20).build());
 	}
 
 	protected boolean isBigLinkHovered(int mouseX, int mouseY) {
@@ -64,17 +63,17 @@ public class SupporterScreen extends Screen {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(matrixStack);
+	public void render(GuiGraphics gfx, int mouseX, int mouseY, float partialTicks) {
+		this.renderDirtBackground(gfx);
 
-		matrixStack.scale(2, 2, 2);
-		this.font.drawShadow(matrixStack, this.title, (this.width / 2 - this.font.width(this.title)) / 2, 5, 0xEEEEEE);
-		this.font.drawShadow(matrixStack, this.patreon, (this.width / 2 - this.font.width(this.patreon)) / 2, (this.height - this.font.lineHeight * 2 - 5) / 2, this.isBigLinkHovered(mouseX, mouseY) ? ChatFormatting.RED.getColor() : ChatFormatting.DARK_RED.getColor());
-		matrixStack.scale(0.5F, 0.5F, 0.5F);
+		gfx.pose().scale(2, 2, 2);
+		gfx.drawString(this.font, this.title, (this.width / 2 - this.font.width(this.title)) / 2, 5, 0xEEEEEE, true);
+		gfx.drawString(this.font, this.patreon, (this.width / 2 - this.font.width(this.patreon)) / 2, (this.height - this.font.lineHeight * 2 - 5) / 2, this.isBigLinkHovered(mouseX, mouseY) ? ChatFormatting.RED.getColor() : ChatFormatting.DARK_RED.getColor(), true);
+		gfx.pose().scale(0.5F, 0.5F, 0.5F);
 
 		int color = this.isTinyLinkHovered(mouseX, mouseY) ? 0x33BB33 : 0x009900;
-		this.font.drawShadow(matrixStack, this.patreon2, this.width - this.font.width(this.patreon2) / 2 - this.font.width(this.patreon3) / 2 - 5, this.height - this.font.lineHeight * 2 - 5, color);
-		this.font.drawShadow(matrixStack, this.patreon3, this.width - this.font.width(this.patreon3) - 5, this.height - this.font.lineHeight * 2 - 5 + this.font.lineHeight, color);
+		gfx.drawString(this.font, this.patreon2, this.width - this.font.width(this.patreon2) / 2 - this.font.width(this.patreon3) / 2 - 5, this.height - this.font.lineHeight * 2 - 5, color, true);
+		gfx.drawString(this.font, this.patreon3, this.width - this.font.width(this.patreon3) - 5, this.height - this.font.lineHeight * 2 - 5 + this.font.lineHeight, color, true);
 
 		List<String> names = Supporters.INSTANCE.getSupporters();
 		int width = (int) (this.width * 0.66);
@@ -85,19 +84,14 @@ public class SupporterScreen extends Screen {
 			String s = names.get(i);
 			rendering = Component.translatable("%s %s", rendering, this.comp(i, s + "    "));
 			if ((strWidth = this.font.width(rendering)) >= width) {
-				this.font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC);
+				gfx.drawString(this.font, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC, true);
 				rendering = Component.literal("");
 			} else if (i == names.size() - 1) {
-				this.font.drawShadow(matrixStack, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC);
+				gfx.drawString(this.font, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC, true);
 			}
 		}
 
-		super.render(matrixStack, mouseX, mouseY, partialTicks);
-	}
-
-	@Override
-	public void renderBackground(PoseStack matrixStack, int vOffset) {
-		this.renderDirtBackground(vOffset);
+		super.render(gfx, mouseX, mouseY, partialTicks);
 	}
 
 	@Override

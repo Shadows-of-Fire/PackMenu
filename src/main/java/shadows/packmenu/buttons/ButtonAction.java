@@ -24,7 +24,7 @@ public enum ButtonAction {
 		Minecraft mc = Minecraft.getInstance();
 		ServerData data = getOrCreateServerData((String) ai.getData());
 		ServerAddress addr = ServerAddress.parseString((String) ai.getData());
-		ConnectScreen.startConnecting(mc.screen, mc, addr, data);
+		ConnectScreen.startConnecting(mc.screen, mc, addr, data, false);
 	}, j -> j.get("data").getAsString()),
 	LOAD_WORLD(ai -> { //Data: World Name (String)
 

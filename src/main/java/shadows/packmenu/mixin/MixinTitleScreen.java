@@ -11,7 +11,7 @@ import shadows.packmenu.ExtendedMenuScreen;
 @Mixin(TitleScreen.class)
 public class MixinTitleScreen {
 
-	@Redirect(at = @At(value = "FIELD", ordinal = 3), method = "preloadResources")
+	@Redirect(at = @At(value = "FIELD", ordinal = 3), method = "preloadResources(Lnet/minecraft/client/renderer/texture/TextureManager;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;")
 	private static CubeMap getCUBE_MAP() {
 		return ExtendedMenuScreen.VARIED_CUBE_MAP;
 	}

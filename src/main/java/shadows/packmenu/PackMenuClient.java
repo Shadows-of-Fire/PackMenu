@@ -18,11 +18,12 @@ import org.apache.commons.io.IOUtils;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
-import net.minecraft.server.packs.FolderPackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.Pack.PackConstructor;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -46,10 +47,10 @@ public class PackMenuClient {
 
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
-	public static boolean drawJavaEd = true;
+	//public static boolean drawJavaEd = true;
 	public static boolean drawForgeInfo = true;
 	public static boolean drawPanorama = false;
-	public static Offset title, javaEd, forgeWarn, splash;
+	public static Offset title, /* javaEd, */ forgeWarn, splash;
 	public static boolean folderPack = false;
 	public static float splashRotation = -20.0F;
 	public static int splashColor = 16776960 | 255 << 24;
@@ -123,8 +124,9 @@ public class PackMenuClient {
 
 		Minecraft.getInstance().getResourcePackRepository().addPackFinder(new RepositorySource() {
 			@Override
-			public void loadPacks(Consumer<Pack> map, PackConstructor factory) {
-				final Pack packInfo = Pack.create(PackMenu.MODID, true, () -> folderPack ? new FolderPackResources(FOLDER_PACK) : new FilePackResources(RESOURCE_PACK), factory, Pack.Position.TOP, PackSource.BUILT_IN);
+			public void loadPacks(Consumer<Pack> map) {
+				Pack.ResourcesSupplier resources = id -> folderPack ? new PathPackResources(id, FOLDER_PACK.toPath(), true) : new FilePackResources(id, RESOURCE_PACK, true);
+				final Pack packInfo = Pack.create(PackMenu.MODID, Component.literal("Packmenu Builtin"), true, resources, Pack.readPackInfo(PackMenu.MODID, resources), PackType.CLIENT_RESOURCES, Pack.Position.TOP, true, PackSource.BUILT_IN);
 				if (packInfo == null) {
 					PackMenu.LOGGER.error("Failed to load resource pack, some things may not work.");
 					return;
@@ -152,11 +154,11 @@ public class PackMenuClient {
 		Configuration cfg = new Configuration(PackMenu.MODID);
 		drawTitle = cfg.getBoolean("Draw Title", "general", true, "If the title (the giant minecraft text) is drawn.");
 		drawSplash = cfg.getBoolean("Draw Splash", "general", true, "If the splash text is drawn.");
-		drawJavaEd = cfg.getBoolean("Draw Java Edition", "general", true, "If the \"Java Edition\" text is drawn.");
+		//drawJavaEd = cfg.getBoolean("Draw Java Edition", "general", true, "If the \"Java Edition\" text is drawn.");
 		drawForgeInfo = cfg.getBoolean("Draw Forge Info", "general", true, "If forge information is drawn at the top center.  This includes beta and update warnings.");
 		drawPanorama = cfg.getBoolean("Draw Panorama", "general", false, "If the vanilla panorama, and it's fade-in, are rendered.  Enabling this disables the use of the custom background options.");
 		title = getOffset("Title", AnchorPoint.TITLE, cfg);
-		javaEd = getOffset("Java Edition Text", AnchorPoint.JAVAED, cfg);
+		//javaEd = getOffset("Java Edition Text", AnchorPoint.JAVAED, cfg);
 		forgeWarn = getOffset("Forge Info", AnchorPoint.FORGE, cfg);
 		splash = getOffset("Splash Text", AnchorPoint.SPLASH, cfg);
 		splashRotation = cfg.getFloat("Rotation", "splash text", splashRotation, -360F, 360F, "The rotation value of the splash text.");

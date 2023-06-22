@@ -17,7 +17,7 @@ public enum AnchorPoint {
 	DEFAULT(s -> s.width / 2, s -> s.height / 4 + 48),
 	DEFAULT_LOGO(s -> s.width / 2, s -> s.height / 4),
 	SPLASH(s -> s.width / 2 + 90, s -> 70),
-	TITLE(s -> s.width / 2 - 137, s -> 30),
+	TITLE(s -> s.width, s -> 30),
 	JAVAED(s -> s.width / 2 - 137 + 88, s -> 67),
 	FORGE(s -> 0, s -> 0);
 

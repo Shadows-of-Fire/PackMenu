@@ -6,10 +6,8 @@ import org.apache.logging.log4j.util.Strings;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import shadows.packmenu.ExtendedMenuScreen;
 import shadows.packmenu.buttons.AnchorPoint;
@@ -48,19 +46,16 @@ public class Logo {
 		this.anchor = anchor;
 	}
 
-	@SuppressWarnings("deprecation")
-	public void draw(ExtendedMenuScreen screen, PoseStack stack) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, this.texture);
+	public void draw(ExtendedMenuScreen screen, GuiGraphics gfx) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
 		RenderSystem.disableDepthTest();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		stack.pushPose();
-		stack.translate(this.anchor.getX(screen), this.anchor.getY(screen), 0);
-		stack.scale((float) this.width / this.texWidth, (float) this.height / this.texHeight, 1);
-		GuiComponent.blit(stack, this.xOff, this.yOff, 0, 0, this.texWidth, this.texHeight, this.texWidth, this.texHeight);
-		stack.popPose();
+		gfx.pose().pushPose();
+		gfx.pose().translate(this.anchor.getX(screen), this.anchor.getY(screen), 0);
+		gfx.pose().scale((float) this.width / this.texWidth, (float) this.height / this.texHeight, 1);
+		gfx.blit(this.texture, this.xOff, this.yOff, 0, 0, this.texWidth, this.texHeight, this.texWidth, this.texHeight);
+		gfx.pose().popPose();
 		RenderSystem.enableDepthTest();
 	}
 
