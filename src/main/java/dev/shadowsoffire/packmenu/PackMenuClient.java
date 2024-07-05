@@ -56,6 +56,7 @@ public class PackMenuClient {
     public static List<ResourceLocation> slideshowTextures;
     public static int slideshowDuration = 200;
     public static int slideshowTransition = 20;
+    public static boolean slideshowRepeat = true;
     public static boolean slideshow = false;
     public static boolean panoramaFade = false;
     public static float panoramaSpeed = 1;
@@ -178,6 +179,7 @@ public class PackMenuClient {
         }
         slideshowDuration = cfg.getInt("Duration", "slideshow", 200, 1, 1000000, "How long between slideshow transitions.");
         slideshowTransition = cfg.getInt("Transition Duration", "slideshow", 20, 1, 1000000, "How long the slideshow transition lasts.");
+        slideshowRepeat = cfg.getBoolean("Repeat", "slideshow", slideshowRepeat, "If the slideshow will be repeated when the final frame hits. Set to false to only do a single run.");
         panoramaFade = cfg.getBoolean("Panorama Fade In", "general", panoramaFade, "If the Panorama has a fade-in effect.");
         panoramaSpeed = cfg.getFloat("Panorama Speed", "general", 1, 0.01F, 100F, "A multiplier on panorama speed.");
         panoramaVariations = cfg.getInt("Panorama Variations", "general", panoramaVariations, 1, 10,

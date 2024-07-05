@@ -44,6 +44,7 @@ public class ExtendedMenuScreen extends TitleScreen {
 
     public ExtendedMenuScreen(boolean fade) {
         super(fade);
+        Slideshow.reset();
     }
 
     @Override

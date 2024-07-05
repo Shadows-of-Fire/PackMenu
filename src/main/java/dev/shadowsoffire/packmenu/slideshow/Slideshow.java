@@ -20,8 +20,14 @@ public class Slideshow {
     private static long ticks = 0;
     private static int index = 0;
     private static boolean fading = false;
+    private static boolean finished = false;
 
     public static void render(ExtendedMenuScreen screen, GuiGraphics gfx, float partialTicks) {
+        if (!PackMenuClient.slideshowRepeat && finished) {
+            gfx.blit(PackMenuClient.slideshowTextures.get(index), 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
+            return;
+        }
+
         gfx.blit(PackMenuClient.slideshowTextures.get(index), 0, 0, screen.width, screen.height, 0.0F, 0.0F, 16, 128, 16, 128);
 
         if (fading) {
@@ -34,17 +40,24 @@ public class Slideshow {
 
     @SubscribeEvent
     public static void tick(ClientTickEvent e) {
-        if (e.phase == Phase.END && Minecraft.getInstance().screen instanceof ExtendedMenuScreen) {
+        if (e.phase == Phase.END && Minecraft.getInstance().screen instanceof ExtendedMenuScreen && !finished) {
             ticks++;
             boolean wasFading = fading;
             fading = ticks % (PackMenuClient.slideshowDuration + PackMenuClient.slideshowTransition) >= PackMenuClient.slideshowDuration;
-            if (wasFading && !fading) index = nextIndex();
+            if (wasFading && !fading) {
+                index = nextIndex();
+                if (index == PackMenuClient.slideshowTextures.size() - 1) {
+                    finished = true;
+                }
+            }
         }
     }
 
     public static void reset() {
         ticks = 0;
         index = 0;
+        fading = false;
+        finished = false;
     }
 
     public static int nextIndex() {
