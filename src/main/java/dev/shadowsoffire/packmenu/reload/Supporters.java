@@ -19,7 +19,7 @@ public class Supporters extends SimplePreparableReloadListener<List<String>> {
 
     public static final Supporters INSTANCE = new Supporters();
 
-    private static final ResourceLocation TEXT_LOCATION = new ResourceLocation(PackMenu.MODID, "texts/supporters.txt");
+    private static final ResourceLocation TEXT_LOCATION = PackMenu.loc("texts/supporters.txt");
     private final List<String> supporters = Lists.newArrayList();
 
     public Supporters() {}

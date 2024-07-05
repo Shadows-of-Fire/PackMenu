@@ -2,7 +2,10 @@ package dev.shadowsoffire.packmenu.buttons;
 
 import java.util.function.Function;
 
+import com.mojang.serialization.Codec;
+
 import dev.shadowsoffire.packmenu.ExtendedMenuScreen;
+import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 
 public enum AnchorPoint {
     TOP_LEFT(s -> 0, s -> 0),
@@ -15,11 +18,11 @@ public enum AnchorPoint {
     BOTTOM_CENTER(s -> s.width / 2, s -> s.height),
     BOTTOM_RIGHT(s -> s.width, s -> s.height),
     DEFAULT(s -> s.width / 2, s -> s.height / 4 + 48),
-    DEFAULT_LOGO(s -> s.width / 2, s -> s.height / 4),
     SPLASH(s -> s.width / 2 + 90, s -> 70),
     TITLE(s -> s.width, s -> 30),
-    JAVAED(s -> s.width / 2 - 137 + 88, s -> 67),
-    FORGE(s -> 0, s -> 0);
+    FORGE(s -> 0, s -> 0);;
+
+    public static final Codec<AnchorPoint> CODEC = PlaceboCodecs.enumCodec(AnchorPoint.class);
 
     private Function<ExtendedMenuScreen, Integer> xFunc;
     private Function<ExtendedMenuScreen, Integer> yFunc;

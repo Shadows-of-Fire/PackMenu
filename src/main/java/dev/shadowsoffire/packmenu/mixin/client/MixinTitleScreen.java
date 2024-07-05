@@ -8,7 +8,7 @@ import dev.shadowsoffire.packmenu.ExtendedMenuScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.renderer.CubeMap;
 
-@Mixin(TitleScreen.class)
+@Mixin(value = TitleScreen.class, remap = false)
 public class MixinTitleScreen {
 
     @Redirect(at = @At(value = "FIELD", ordinal = 3), method = "preloadResources(Lnet/minecraft/client/renderer/texture/TextureManager;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;")

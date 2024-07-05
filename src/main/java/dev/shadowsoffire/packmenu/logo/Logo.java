@@ -63,15 +63,15 @@ public class Logo {
     public static Logo read(Configuration cfg) {
         String tex = cfg.getString("Texture Path", "logo", "packmenu:textures/gui/logo.png", "The location of the logo texture.  Must be a png file.  Should contain the extension.");
         int xOff = cfg.getInt("X Offset", "logo", -650, -500000, 500000, "The X offset of the logo.");
-        int yOff = cfg.getInt("Y Offset", "logo", 0, -500000, 500000, "The Y offset of the logo.");
+        int yOff = cfg.getInt("Y Offset", "logo", -48, -500000, 500000, "The Y offset of the logo.");
         int width = cfg.getInt("Width", "logo", 100, 0, 500000, "The width of the logo.");
         int height = cfg.getInt("Height", "logo", 100, 0, 500000, "The height of the logo.");
         int texWidth = cfg.getInt("Texture Width", "logo", 300, 0, 500000, "The width of the logo's texture.");
         int texHeight = cfg.getInt("Texture Height", "logo", 300, 0, 500000, "The height of the logo's texture.");
-        AnchorPoint anchor = AnchorPoint.valueOf(cfg.getString("Anchor Point", "logo", "DEFAULT_LOGO", "The anchor point of the logo.  The types of anchor points are available on the wiki."));
+        AnchorPoint anchor = AnchorPoint.valueOf(cfg.getString("Anchor Point", "logo", "DEFAULT", "The anchor point of the logo.  The types of anchor points are available on the wiki."));
         if (!cfg.getBoolean("Enable Logo", "logo", true, "If the logo is enabled or not.")) return null;
         if (Strings.isBlank(tex)) return null;
-        return new Logo(xOff, yOff, width, height, texWidth, texHeight, new ResourceLocation(tex), anchor);
+        return new Logo(xOff, yOff, width, height, texWidth, texHeight, ResourceLocation.parse(tex), anchor);
     }
 
 }

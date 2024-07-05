@@ -3,7 +3,7 @@ package dev.shadowsoffire.packmenu.panorama;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import dev.shadowsoffire.packmenu.PackMenuClient;
+import dev.shadowsoffire.packmenu.PackMenu;
 import net.minecraft.client.renderer.CubeMap;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
@@ -16,12 +16,12 @@ public class VariedCubeMap extends CubeMap {
         super(texture);
 
         for (int i = 0; i < 6; ++i) {
-            this.locations[0][i] = new ResourceLocation(texture.getNamespace(), texture.getPath() + '_' + i + ".png");
+            this.locations[0][i] = ResourceLocation.fromNamespaceAndPath(texture.getNamespace(), texture.getPath() + '_' + i + ".png");
         }
 
         for (int variation = 1; variation < 10; variation++) {
             for (int i = 0; i < 6; ++i) {
-                this.locations[variation][i] = new ResourceLocation(texture.getNamespace(), texture.getPath() + variation + '_' + i + ".png");
+                this.locations[variation][i] = ResourceLocation.fromNamespaceAndPath(texture.getNamespace(), texture.getPath() + variation + '_' + i + ".png");
             }
         }
     }
@@ -32,9 +32,9 @@ public class VariedCubeMap extends CubeMap {
 
     @Override
     public CompletableFuture<Void> preload(TextureManager texMngr, Executor backgroundExecutor) {
-        CompletableFuture<?>[] completablefuture = new CompletableFuture[PackMenuClient.panoramaVariations * 6];
+        CompletableFuture<?>[] completablefuture = new CompletableFuture[PackMenu.panoramaVariations * 6];
 
-        for (int i = 0; i < PackMenuClient.panoramaVariations; i++) {
+        for (int i = 0; i < PackMenu.panoramaVariations; i++) {
             for (int j = 0; j < 6; j++) {
                 completablefuture[i * 6 + j] = texMngr.preload(this.locations[i][j], backgroundExecutor);
             }

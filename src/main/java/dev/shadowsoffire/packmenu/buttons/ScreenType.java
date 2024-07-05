@@ -3,57 +3,57 @@ package dev.shadowsoffire.packmenu.buttons;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import com.mojang.realmsclient.RealmsMainScreen;
+import com.mojang.serialization.Codec;
+
 import dev.shadowsoffire.packmenu.gui.SupporterScreen;
+import dev.shadowsoffire.placebo.codec.PlaceboCodecs;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.AccessibilityOptionsScreen;
-import net.minecraft.client.gui.screens.LanguageSelectScreen;
-import net.minecraft.client.gui.screens.OptionsScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
+import net.minecraft.client.gui.screens.options.AccessibilityOptionsScreen;
+import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
+import net.minecraft.client.gui.screens.options.OptionsScreen;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraftforge.client.gui.ModListScreen;
+import net.neoforged.neoforge.client.gui.ModListScreen;
 
-public enum ScreenType implements Function<Screen, Screen> {
+public enum ScreenType {
     SINGLEPLAYER(SelectWorldScreen::new),
     MULTIPLAYER(JoinMultiplayerScreen::new),
     MODS(ModListScreen::new),
-    LANGUAGE(
-        m -> new LanguageSelectScreen(m, Minecraft.getInstance().options, Minecraft.getInstance().getLanguageManager())),
+    LANGUAGE(m -> new LanguageSelectScreen(m, Minecraft.getInstance().options, Minecraft.getInstance().getLanguageManager())),
     OPTIONS(m -> new OptionsScreen(m, Minecraft.getInstance().options)),
     ACCESSIBILITY(m -> new AccessibilityOptionsScreen(m, Minecraft.getInstance().options)),
-    RESOURCE_PACKS(new RPScreenFunction()),
-    SUPPORTERS(SupporterScreen::new);
+    RESOURCE_PACKS(ScreenType::makePackSelection),
+    SUPPORTERS(SupporterScreen::new),
+    REALMS(RealmsMainScreen::new);
 
-    protected Function<Screen, Screen> supplier;
+    public static final Codec<ScreenType> CODEC = PlaceboCodecs.enumCodec(ScreenType.class);
+
+    protected final Function<Screen, Screen> supplier;
 
     private ScreenType(Function<Screen, Screen> supplier) {
         this.supplier = supplier;
     }
 
-    @Override
-    public Screen apply(Screen t) {
-        return this.supplier.apply(t);
+    public Screen createNewScreen(Screen parent) {
+        return this.supplier.apply(parent);
     }
 
-    public static class RPScreenFunction implements Function<Screen, Screen> {
+    public static PackSelectionScreen makePackSelection(Screen main) {
+        Minecraft mc = Minecraft.getInstance();
+        OptionsScreen optScn = new OptionsScreen(main, mc.options);
+        optScn.init(mc, 40, 40);
 
-        @Override
-        public PackSelectionScreen apply(Screen t) {
-            Minecraft mc = Minecraft.getInstance();
-            OptionsScreen optScn = new OptionsScreen(t, mc.options);
-            optScn.init(mc, 40, 40);
+        Consumer<PackRepository> applyPacks = repo -> {
+            mc.options.updateResourcePacks(repo);
+            mc.setScreen(main);
+        };
 
-            Consumer<PackRepository> applyPacks = repo -> {
-                mc.options.updateResourcePacks(repo);
-                mc.setScreen(t);
-            };
-
-            return new PackSelectionScreen(mc.getResourcePackRepository(), applyPacks, mc.getResourcePackDirectory(), Component.translatable("resourcePack.title"));
-        }
-
+        return new PackSelectionScreen(mc.getResourcePackRepository(), applyPacks, mc.getResourcePackDirectory(), Component.translatable("resourcePack.title"));
     }
 
 }

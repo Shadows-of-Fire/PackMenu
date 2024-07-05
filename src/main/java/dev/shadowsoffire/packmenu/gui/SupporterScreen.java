@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 
 import dev.shadowsoffire.packmenu.PackMenu;
-import dev.shadowsoffire.packmenu.PackMenuClient;
 import dev.shadowsoffire.packmenu.reload.Supporters;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -19,16 +18,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = PackMenu.MODID)
 public class SupporterScreen extends Screen {
 
-    public static final String PM_PATREON = "https://www.patreon.com/Shadows_of_Fire?fan_landing=true";
+    public static final String PM_PATREON = "https://discord.shadowsoffire.dev/landing";
 
     protected final Screen parent;
     protected static final Int2IntMap colorFades = new Int2IntOpenHashMap();
@@ -40,7 +38,7 @@ public class SupporterScreen extends Screen {
         super(Component.translatable("packmenu.supporters"));
         this.parent = parent;
         colorFades.defaultReturnValue(-1);
-        this.patreon = Component.translatable("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenuClient.patreonUrl)));
+        this.patreon = Component.translatable("packmenu.support.modpack").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PackMenu.patreonUrl)));
         this.patreon2 = Component.translatable("packmenu.support").withStyle(Style.EMPTY.withClickEvent(new ClickEvent(Action.OPEN_URL, PM_PATREON)));
         this.patreon3 = Component.translatable("packmenu.support1");
     }
@@ -64,7 +62,7 @@ public class SupporterScreen extends Screen {
 
     @Override
     public void render(GuiGraphics gfx, int mouseX, int mouseY, float partialTicks) {
-        this.renderDirtBackground(gfx);
+        super.render(gfx, mouseX, mouseY, partialTicks);
 
         gfx.pose().scale(2, 2, 2);
         gfx.drawString(this.font, this.title, (this.width / 2 - this.font.width(this.title)) / 2, 5, 0xEEEEEE, true);
@@ -93,8 +91,6 @@ public class SupporterScreen extends Screen {
                 gfx.drawString(this.font, rendering, this.width / 2 - strWidth / 2, renders++ * (2 + this.font.lineHeight), 0xCCCCCC, true);
             }
         }
-
-        super.render(gfx, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -123,10 +119,8 @@ public class SupporterScreen extends Screen {
     }
 
     @SubscribeEvent
-    public static void tickFades(ClientTickEvent e) {
-        if (e.phase == Phase.END) {
-            colorFades.replaceAll((k, v) -> v == -1 || step(v) == 0xCCCCCC ? -1 : step(v));
-        }
+    public static void tickFades(ClientTickEvent.Post e) {
+        colorFades.replaceAll((k, v) -> v == -1 || step(v) == 0xCCCCCC ? -1 : step(v));
     }
 
 }

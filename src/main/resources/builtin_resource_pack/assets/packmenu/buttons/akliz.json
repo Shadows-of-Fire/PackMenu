@@ -1,0 +1,20 @@
+{
+    "x": -150,
+    "y": 0,
+    "width": 150,
+    "height": 20,
+    "anchor": "top_right",
+    "icon": {
+        "texture": "packmenu:icon/akliz",
+        "width": 150,
+        "height": 20
+    },
+    "action": {
+        "type": "packmenu:open_url",
+        "url": "https://www.akliz.net/partners"
+    },
+    "text": {
+        "key": "packmenu.akliz",
+        "x_offset": 5
+    }
+}

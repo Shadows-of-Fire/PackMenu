@@ -7,8 +7,8 @@ import java.util.TreeMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 
 import dev.shadowsoffire.packmenu.PackMenu;
 import dev.shadowsoffire.packmenu.buttons.JsonButton;
@@ -19,7 +19,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 
 public class ButtonManager extends SimpleJsonResourceReloadListener {
 
-    public static final Gson GSON = new GsonBuilder().registerTypeAdapter(JsonButton.class, (JsonDeserializer<JsonButton>) (json, type, ctx) -> JsonButton.deserialize(json.getAsJsonObject())).setPrettyPrinting().create();
+    public static final Gson GSON = new GsonBuilder().create();
 
     protected Map<ResourceLocation, JsonButton> buttons = new TreeMap<>();
 
@@ -32,7 +32,7 @@ public class ButtonManager extends SimpleJsonResourceReloadListener {
         this.buttons.clear();
         for (Entry<ResourceLocation, JsonElement> obj : objects.entrySet()) {
             try {
-                JsonButton btn = GSON.fromJson(obj.getValue(), JsonButton.class);
+                JsonButton btn = JsonButton.CODEC.decode(JsonOps.INSTANCE, obj.getValue()).getOrThrow().getFirst();
                 this.buttons.put(obj.getKey(), btn);
             }
             catch (Exception e) {

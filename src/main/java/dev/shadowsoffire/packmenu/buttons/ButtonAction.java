@@ -1,93 +1,174 @@
 package dev.shadowsoffire.packmenu.buttons;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import com.google.gson.JsonObject;
-import com.mojang.realmsclient.RealmsMainScreen;
-
-import dev.shadowsoffire.packmenu.PackMenuClient;
+import dev.shadowsoffire.packmenu.PackMenu;
+import dev.shadowsoffire.placebo.codec.CodecMap;
+import dev.shadowsoffire.placebo.codec.CodecProvider;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 
-@SuppressWarnings("deprecation")
-public enum ButtonAction {
-    CONNECT_TO_SERVER(ai -> { // Data: Server IP (String)
-        Minecraft mc = Minecraft.getInstance();
-        ServerData data = getOrCreateServerData((String) ai.getData());
-        ServerAddress addr = ServerAddress.parseString((String) ai.getData());
-        ConnectScreen.startConnecting(mc.screen, mc, addr, data, false);
-    }, j -> j.get("data").getAsString()),
-    LOAD_WORLD(ai -> { // Data: World Name (String)
+/**
+ * Jsonified {@link OnPress} handlers for {@link JsonButton}.
+ */
+public interface ButtonAction extends CodecProvider<ButtonAction>, OnPress {
 
-    }, j -> j.get("data").getAsString()),
-    REALMS(ai -> {
-        Minecraft.getInstance().setScreen(new RealmsMainScreen(Minecraft.getInstance().screen));
-    }, j -> null),
-    RELOAD(ai -> { // Data: null
-        PackMenuClient.loadConfig();
-        Minecraft.getInstance().reloadResourcePacks();
-    }, j -> null),
-    OPEN_GUI(ai -> { // Data: ScreenType (String)
-        Minecraft.getInstance().setScreen(((ScreenType) ai.getData()).apply(Minecraft.getInstance().screen));
-    }, j -> ScreenType.valueOf(ScreenType.class, j.get("data").getAsString().toUpperCase(Locale.ROOT))),
-    OPEN_URL(ai -> { // Data: Link (URI)
-        Util.getPlatform().openUri((URI) ai.getData());
-    }, j -> {
-        try {
-            return new URI(j.get("data").getAsString());
-        }
-        catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }),
-    QUIT(ai -> { // Data: null
-        Minecraft.getInstance().stop();
-    }, j -> null),
-    NONE(ai -> {}, j -> null);
+    public static final CodecMap<ButtonAction> CODEC = new CodecMap<>("Button Action");
 
-    private Consumer<ActionInstance> action;
-    private Function<JsonObject, Object> reader;
+    public static void registerCodecs() {
+        register("connect_to_server", ConnectToServer.CODEC);
+        register("reload", Reload.CODEC);
+        register("open_screen", OpenScreen.CODEC);
+        register("open_url", OpenUrl.CODEC);
+        register("quit", Quit.CODEC);
+        register("none", None.CODEC);
+    }
+
+    private static void register(String id, Codec<? extends ButtonAction> codec) {
+        CODEC.register(PackMenu.loc(id), codec);
+    }
 
     /**
-     * Creates a button action.
-     *
-     * @param action The action instance containing this action. It is assumed have this action as it's specified action
-     *               and any related data required in the data object.
+     * Opens a server as specified by `ip_address`.
      */
-    ButtonAction(Consumer<ActionInstance> action, Function<JsonObject, Object> reader) {
-        this.action = action;
-        this.reader = reader;
-    }
+    public static record ConnectToServer(String ipAddress) implements ButtonAction {
 
-    public void onPress(ActionInstance button) {
-        this.action.accept(button);
-    }
+        public static Codec<ConnectToServer> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+            Codec.STRING.fieldOf("ip_address").forGetter(ConnectToServer::ipAddress))
+            .apply(inst, ConnectToServer::new));
 
-    public Object readData(JsonObject json) {
-        return this.reader.apply(json);
-    }
-
-    public static ServerData getOrCreateServerData(String ip) {
-        JoinMultiplayerScreen scn = new JoinMultiplayerScreen(Minecraft.getInstance().screen);
-        scn.init(Minecraft.getInstance(), 0, 0);
-        ServerList list = scn.getServers();
-        for (int i = 0; i < list.size(); i++) {
-            ServerData data = list.get(i);
-            if (data.ip.equals(ip)) return data;
+        @Override
+        public Codec<ConnectToServer> getCodec() {
+            return CODEC;
         }
-        ServerData data = new ServerData("Packmenu Managed Server", ip, false);
-        list.add(data, true);
-        list.save();
-        return data;
+
+        @Override
+        public void onPress(Button button) {
+            Minecraft mc = Minecraft.getInstance();
+            ServerData data = getOrCreateServerData(this.ipAddress());
+            ServerAddress addr = ServerAddress.parseString(this.ipAddress());
+            ConnectScreen.startConnecting(mc.screen, mc, addr, data, false, null);
+        }
+
+        public static ServerData getOrCreateServerData(String ip) {
+            JoinMultiplayerScreen scn = new JoinMultiplayerScreen(Minecraft.getInstance().screen);
+            scn.init(Minecraft.getInstance(), 0, 0);
+            ServerList list = scn.getServers();
+            for (int i = 0; i < list.size(); i++) {
+                ServerData data = list.get(i);
+                if (data.ip.equals(ip)) return data;
+            }
+            ServerData data = new ServerData("Packmenu Managed Server", ip, ServerData.Type.OTHER);
+            list.add(data, true);
+            list.save();
+            return data;
+        }
+    }
+
+    /**
+     * Reloads the packmenu config and all resource packs.
+     */
+    public static record Reload() implements ButtonAction {
+
+        public static Codec<Reload> CODEC = Codec.unit(Reload::new);
+
+        @Override
+        public Codec<Reload> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public void onPress(Button button) {
+            PackMenu.loadConfig();
+            Minecraft.getInstance().reloadResourcePacks();
+        }
+    }
+
+    /**
+     * Opens a screen as specified by `screen`.
+     * 
+     * @see {@link ScreenType}
+     */
+    public static record OpenScreen(ScreenType type) implements ButtonAction {
+
+        public static Codec<OpenScreen> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+            ScreenType.CODEC.fieldOf("screen").forGetter(OpenScreen::type))
+            .apply(inst, OpenScreen::new));
+
+        @Override
+        public Codec<OpenScreen> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public void onPress(Button button) {
+            Minecraft mc = Minecraft.getInstance();
+            mc.setScreen(this.type.createNewScreen(mc.screen));
+        }
+    }
+
+    /**
+     * Opens a URL as specified by `url`.
+     */
+    public static record OpenUrl(String url) implements ButtonAction {
+
+        public static Codec<OpenUrl> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+            Codec.STRING.fieldOf("url").forGetter(OpenUrl::url))
+            .apply(inst, OpenUrl::new));
+
+        @Override
+        public Codec<OpenUrl> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public void onPress(Button button) {
+            Util.getPlatform().openUri(this.url);
+        }
+    }
+
+    /**
+     * Quits the game.
+     */
+    public static record Quit() implements ButtonAction {
+
+        public static Codec<Quit> CODEC = Codec.unit(Quit::new);
+
+        @Override
+        public Codec<Quit> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public void onPress(Button button) {
+            Minecraft.getInstance().stop();
+        }
+    }
+
+    /**
+     * Performs no action.
+     */
+    public static record None() implements ButtonAction {
+
+        public static Codec<None> CODEC = Codec.unit(None::new);
+
+        @Override
+        public Codec<None> getCodec() {
+            return CODEC;
+        }
+
+        @Override
+        public void onPress(Button button) {
+            // No-op
+        }
     }
 
 }
