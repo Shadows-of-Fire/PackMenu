@@ -1,3 +1,6 @@
+## 6.1.2
+* Made it possible for the slideshow to only run one time instead of repeating infinitely.
+
 ## 6.1.1
 * Removed forge dependency line from the mods.toml and marked as Forge and NeoForge for CF.
   * The dependency will be added back and the Forge marker will be removed once CF supports Neo correctly.
