@@ -1,3 +1,9 @@
+## 7.0.0
+* Updated to Minecraft 1.21!
+* Rewrote the internal structure of `JsonButton` to handle the changes to vanilla GUI code.
+* Wrote schema documents detailing the new format. See [here](./schema/JsonButton.md).
+* Removed the ability to use zip files as the packmenu-provided resource pack. Only folder packs are supported.
+
 ## 6.1.2
 * Made it possible for the slideshow to only run one time instead of repeating infinitely.
 
