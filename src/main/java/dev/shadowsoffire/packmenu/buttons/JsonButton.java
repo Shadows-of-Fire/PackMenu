@@ -121,7 +121,8 @@ public class JsonButton extends Button {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             gfx.pose().pushPose();
             gfx.pose().scale(this.scaleX, this.scaleY, 1);
-            gfx.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), Math.round(this.getX() / this.scaleX), Math.round(this.getY() / this.scaleY), Math.round(this.width / this.scaleX), Math.round(this.height / this.scaleY));
+            gfx.blitSprite(this.sprites.get(this.active, this.isHoveredOrFocused()), Math.round(this.getX() / this.scaleX), Math.round(this.getY() / this.scaleY), Math.round(this.width / this.scaleX),
+                Math.round(this.height / this.scaleY));
             if (this.icon.isPresent()) {
                 ButtonIcon icon = this.icon.get();
                 int iconX = this.getX() + this.getWidth() / 2 - icon.width() / 2;
