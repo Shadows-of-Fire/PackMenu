@@ -1,3 +1,6 @@
+## 7.0.1
+* Fixed json buttons always using the vanilla sprites, instead of the specified value.
+
 ## 7.0.0
 * Updated to Minecraft 1.21!
 * Rewrote the internal structure of `JsonButton` to handle the changes to vanilla GUI code.
