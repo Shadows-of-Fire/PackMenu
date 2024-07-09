@@ -56,15 +56,19 @@ public class PackMenu {
     public static boolean drawSplash = true;
     public static boolean drawForgeInfo = true;
     public static boolean drawPanorama = false;
+
     public static Offset title, /* javaEd, */ forgeWarn, splash;
     public static float splashRotation = -20.0F;
     public static int splashColor = 16776960 | 255 << 24;
     public static AnchorPoint splashAnchor = AnchorPoint.MIDDLE_CENTER;
+
     public static List<ResourceLocation> slideshowTextures;
     public static int slideshowDuration = 200;
     public static int slideshowTransition = 20;
     public static boolean slideshowRepeat = true;
     public static boolean slideshow = false;
+    public static boolean randomSlideshow = false;
+
     public static boolean panoramaFade = false;
     public static float panoramaSpeed = 1;
     public static int panoramaVariations = 1;
@@ -134,6 +138,7 @@ public class PackMenu {
         splashRotation = cfg.getFloat("Rotation", "splash text", splashRotation, -360F, 360F, "The rotation value of the splash text.");
         splashColor = cfg.getInt("Color", "splash text", splashColor, -Integer.MAX_VALUE, Integer.MAX_VALUE, "The color of the splash text.");
         logo = Logo.read(cfg);
+        
         String[] slideshow = cfg.getStringList("Textures", "slideshow", new String[0], "The list of textures to be displayed on the slideshow.  If empty, the slideshow is ignored.");
         slideshowTextures = new ArrayList<>();
         for (String s : slideshow) {
@@ -146,7 +151,9 @@ public class PackMenu {
         }
         slideshowDuration = cfg.getInt("Duration", "slideshow", 200, 1, 1000000, "How long between slideshow transitions.");
         slideshowTransition = cfg.getInt("Transition Duration", "slideshow", 20, 1, 1000000, "How long the slideshow transition lasts.");
-        slideshowRepeat = cfg.getBoolean("Repeat", "slideshow", slideshowRepeat, "If the slideshow will be repeated when the final frame hits. Set to false to only do a single run.");
+        slideshowRepeat = cfg.getBoolean("Repeat", "slideshow", true, "If the slideshow will be repeated when the final frame hits. Set to false to only do a single run.");
+        randomSlideshow = cfg.getBoolean("Random", "slideshow", false, "If the order of slides in the slideshow will be randomized. Requires slideshow repeat to be enabled.");
+        
         panoramaFade = cfg.getBoolean("Panorama Fade In", "general", panoramaFade, "If the Panorama has a fade-in effect.");
         panoramaSpeed = cfg.getFloat("Panorama Speed", "general", 1, 0.01F, 100F, "A multiplier on panorama speed.");
         panoramaVariations = cfg.getInt("Panorama Variations", "general", panoramaVariations, 1, 10,

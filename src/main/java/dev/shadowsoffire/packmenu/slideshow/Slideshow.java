@@ -1,5 +1,7 @@
 package dev.shadowsoffire.packmenu.slideshow;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import dev.shadowsoffire.packmenu.ExtendedMenuScreen;
@@ -56,9 +58,17 @@ public class Slideshow {
         index = 0;
         fading = false;
         finished = false;
+
+        if (PackMenu.slideshowRepeat && PackMenu.randomSlideshow) {
+            index = nextIndex();
+        }
     }
 
     public static int nextIndex() {
+        if (PackMenu.slideshowRepeat && PackMenu.randomSlideshow) {
+            return ThreadLocalRandom.current().nextInt(PackMenu.slideshowTextures.size());
+        }
+
         return index + 1 == PackMenu.slideshowTextures.size() ? 0 : index + 1;
     }
 
