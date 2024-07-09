@@ -1,3 +1,12 @@
+## 7.0.2
+* Made hover objects more customizable.
+  * Removed hover-related fields from `ButtonText` and added separate `hover_text` and `hover_icon` fields to `JsonButton`.
+* Fixed default text rendering offset.
+  * The previous version set the default offset in the json to `-4` instead of properly centering the text and making the default json offset `0`.
+  * This _might_ break some existing files if anyone is already correcting for the `-4` offset, but I don't think anyone is yet.
+* Added the ability to render slideshow images in a random order.
+* FITFC: Added Brazillian translation.
+
 ## 7.0.1
 * Fixed json buttons always using the vanilla sprites, instead of the specified value.
 
