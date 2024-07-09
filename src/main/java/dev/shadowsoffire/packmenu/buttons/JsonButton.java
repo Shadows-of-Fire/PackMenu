@@ -13,6 +13,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
@@ -26,9 +27,11 @@ public class JsonButton extends Button {
         Codec.intRange(0, Short.MAX_VALUE).fieldOf("height").forGetter(JsonButton::getHeight),
         AnchorPoint.CODEC.optionalFieldOf("anchor", AnchorPoint.DEFAULT).forGetter(JsonButton::getAnchor),
         WidgetSpritesCodec.INSTANCE.optionalFieldOf("sprites", SPRITES).forGetter(JsonButton::getSprites),
-        ButtonIcon.CODEC.optionalFieldOf("icon").forGetter(JsonButton::getIcon),
+        ButtonIcon.CODEC.optionalFieldOf("icon", ButtonIcon.EMPTY).forGetter(JsonButton::getIcon),
+        ButtonIcon.CODEC.optionalFieldOf("hover_icon").forGetter(JsonButton::getHoverIcon),
         ButtonAction.CODEC.fieldOf("action").forGetter(JsonButton::getAction),
         ButtonText.CODEC.optionalFieldOf("text", ButtonText.EMPTY).forGetter(JsonButton::getText),
+        ButtonText.CODEC.optionalFieldOf("hover_text").forGetter(JsonButton::getHoverText),
         Codec.BOOL.optionalFieldOf("active", true).forGetter(JsonButton::isActive),
         Codec.FLOAT.optionalFieldOf("scale_x", 1F).forGetter(JsonButton::getScaleX),
         Codec.FLOAT.optionalFieldOf("scale_y", 1F).forGetter(JsonButton::getScaleY))
@@ -37,27 +40,32 @@ public class JsonButton extends Button {
     protected final int xOff, yOff;
     protected final AnchorPoint anchor;
     protected final WidgetSprites sprites;
-    protected final Optional<ButtonIcon> icon;
+    protected final ButtonIcon icon;
+    protected final Optional<ButtonIcon> hoverIcon;
     protected final ButtonAction action;
     protected final ButtonText text;
+    protected final Optional<ButtonText> hoverText;
     protected final float scaleX, scaleY;
 
     protected int scrollCounter = 0;
     protected Component hoverMessage;
 
-    public JsonButton(int xPos, int yPos, int width, int height, AnchorPoint anchor, WidgetSprites sprites, Optional<ButtonIcon> icon, ButtonAction action, ButtonText text, boolean active, float scaleX, float scaleY) {
+    public JsonButton(int xPos, int yPos, int width, int height, AnchorPoint anchor, WidgetSprites sprites, ButtonIcon icon, Optional<ButtonIcon> hoverIcon, ButtonAction action, ButtonText text,
+        Optional<ButtonText> hoverText, boolean active, float scaleX, float scaleY) {
         super(xPos, yPos, width, height, Component.translatable(text.key()), action, Button.DEFAULT_NARRATION);
         this.xOff = xPos;
         this.yOff = yPos;
         this.anchor = anchor;
         this.sprites = sprites;
         this.icon = icon;
+        this.hoverIcon = hoverIcon;
         this.action = action;
         this.text = text;
+        this.hoverText = hoverText;
         this.active = active;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
-        this.hoverMessage = Component.translatable(text.hoverKey());
+        this.hoverMessage = Component.translatable(hoverText.isPresent() ? hoverText.get().key() : text.key());
     }
 
     public int getXPos() {
@@ -76,8 +84,12 @@ public class JsonButton extends Button {
         return sprites;
     }
 
-    public Optional<ButtonIcon> getIcon() {
+    public ButtonIcon getIcon() {
         return icon;
+    }
+
+    public Optional<ButtonIcon> getHoverIcon() {
+        return hoverIcon;
     }
 
     public ButtonAction getAction() {
@@ -86,6 +98,10 @@ public class JsonButton extends Button {
 
     public ButtonText getText() {
         return text;
+    }
+
+    public Optional<ButtonText> getHoverText() {
+        return hoverText;
     }
 
     public float getScaleX() {
@@ -100,7 +116,7 @@ public class JsonButton extends Button {
         this.setX(this.xOff + this.anchor.getX(screen));
         this.setY(this.yOff + this.anchor.getY(screen));
         this.setMessage(Component.translatable(this.text.key()));
-        this.hoverMessage = Component.translatable(this.text.hoverKey());
+        this.hoverMessage = Component.translatable(hoverText.isPresent() ? hoverText.get().key() : text.key());
         return this;
     }
 
@@ -123,50 +139,48 @@ public class JsonButton extends Button {
             gfx.pose().scale(this.scaleX, this.scaleY, 1);
             gfx.blitSprite(this.sprites.get(this.active, this.isHoveredOrFocused()), Math.round(this.getX() / this.scaleX), Math.round(this.getY() / this.scaleY), Math.round(this.width / this.scaleX),
                 Math.round(this.height / this.scaleY));
-            if (this.icon.isPresent()) {
-                ButtonIcon icon = this.icon.get();
-                int iconX = this.getX() + this.getWidth() / 2 - icon.width() / 2;
-                int iconY = this.getY() + this.getHeight() / 2 - icon.height() / 2;
+
+            ButtonIcon icon = this.getActiveIcon();
+            if (icon != ButtonIcon.EMPTY) {
+                int iconX = this.getX() + this.getWidth() / 2 - icon.width() / 2 + icon.xOff();
+                int iconY = this.getY() + this.getHeight() / 2 - icon.height() / 2 + icon.yOff();
                 gfx.blitSprite(icon.texture(), Math.round(iconX / this.scaleX), Math.round(iconY / this.scaleY), Math.round(icon.width() / this.scaleX), Math.round(icon.height() / this.scaleY));
             }
+
             gfx.pose().popPose();
             gfx.setColor(1.0F, 1.0F, 1.0F, 1.0F);
             this.renderText(gfx, partial);
         }
     }
 
-    protected void drawCenteredString(GuiGraphics stack, Font font, String string, int x, int y, int color) {
-        if (this.text.dropShadow()) {
-            stack.drawCenteredString(font, string, x, y, color);
-        }
-        else {
-            drawCenteredStringNoShadow(stack, font, string, x, y, color);
-        }
-    }
-
     protected void renderText(GuiGraphics stack, float partial) {
         Minecraft mc = Minecraft.getInstance();
-        int color = this.getFGColor();
-        String buttonText = this.getMessage().getString();
-        int strWidth = mc.font.width(buttonText);
+        ButtonText text = this.getActiveText();
+        String msg = I18n.get(text.key());
+
+        int strWidth = mc.font.width(msg);
         if (strWidth <= this.width - 6) {
-            this.drawCenteredString(stack, mc.font, buttonText, this.getX() + this.width / 2 + this.text.xOff(), this.getY() + this.height / 2 + this.text.yOff(), color);
+            drawCenteredString(stack, mc.font, msg, this.getX() + this.width / 2 + text.xOff(), this.getY() + this.height / 2 + text.yOff(), text.color(), text.dropShadow());
         }
         else if (!this.isHovered) {
             this.scrollCounter = 0;
             int ellipsisWidth = mc.font.width("...");
-            if (strWidth > ellipsisWidth) buttonText = this.trimStringToWidth(this.getMessage(), this.width - 6 - ellipsisWidth).getString().trim() + "...";
-            this.drawCenteredString(stack, mc.font, buttonText, this.getX() + this.width / 2 + this.text.xOff(), this.getY() + this.height / 2 + this.text.yOff(), color);
+
+            if (strWidth > ellipsisWidth) {
+                msg = trimStringToWidth(FormattedText.of(msg), this.width - 6 - ellipsisWidth).getString().trim() + "...";
+            }
+
+            drawCenteredString(stack, mc.font, msg, this.getX() + this.width / 2 + text.xOff(), this.getY() + this.height / 2 + text.yOff(), text.color(), text.dropShadow());
         }
         else {
-            int halfLen = mc.font.width(buttonText + "      ");
-            buttonText += "      " + buttonText;
+            int halfLen = mc.font.width(msg + "      ");
+            msg += "      " + msg;
             stack.pose().pushPose();
             double d0 = mc.getWindow().getGuiScale();
             float y = Minecraft.getInstance().screen.height - this.getY() - this.height;
             RenderSystem.enableScissor((int) (this.getX() * d0), (int) (y * d0), (int) (d0 * this.width), (int) (d0 * this.height));
             stack.pose().translate((-this.scrollCounter - partial) % halfLen, 0, 0);
-            stack.drawString(mc.font, buttonText, this.getX() + this.width / 8 + this.text.xOff(), this.getY() + this.height / 2 + this.text.yOff(), color, this.text.dropShadow());
+            stack.drawString(mc.font, msg, this.getX() + this.width / 8 + text.xOff(), this.getY() + this.height / 2 + text.yOff(), text.color(), text.dropShadow());
             RenderSystem.disableScissor();
             stack.pose().popPose();
         }
@@ -176,16 +190,26 @@ public class JsonButton extends Button {
         this.scrollCounter++;
     }
 
-    public FormattedText trimStringToWidth(FormattedText str, int width) {
+    public ButtonText getActiveText() {
+        if (this.isHoveredOrFocused()) {
+            return this.hoverText.orElse(this.text);
+        }
+        return this.text;
+    }
+
+    public ButtonIcon getActiveIcon() {
+        if (this.isHoveredOrFocused()) {
+            return this.hoverIcon.orElse(this.icon);
+        }
+        return this.icon;
+    }
+
+    public static FormattedText trimStringToWidth(FormattedText str, int width) {
         return Minecraft.getInstance().font.getSplitter().splitLines(str, width, Style.EMPTY).get(0);
     }
 
-    @Override
-    public int getFGColor() {
-        return !this.isHovered ? this.text.color() : this.text.hoverColor();
+    protected static void drawCenteredString(GuiGraphics stack, Font font, String string, int x, int y, int color, boolean dropShadow) {
+        stack.drawString(font, string, x - font.width(string) / 2, y, color, dropShadow);
     }
 
-    public static void drawCenteredStringNoShadow(GuiGraphics stack, Font font, String string, int x, int y, int color) {
-        stack.drawString(font, string, x - font.width(string) / 2, y, color, false);
-    }
 }

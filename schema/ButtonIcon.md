@@ -14,6 +14,8 @@ Textures for icons are normalized against `/textures/gui/sprites`, which means a
     "texture": "string", // [Mandatory] || The texture path for the icon.
     "width":   int,      // [Mandatory] || The width of the icon, in pixels.
     "height":  int       // [Mandatory] || The height of the icon, in pixels.
+    "x_offset": int,     // [Optional]  || The x-offset, in pixels, for drawing the icon. Defaults to 0.
+    "y_offset": int,     // [Optional]  || The y-offset, in pixels, for drawing the icon. Defaults to 0.
 }
 ```
 

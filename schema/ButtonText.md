@@ -5,11 +5,9 @@ A button text object holds all information needed to draw text on a button. Text
 ```js
 {
     "key": "string",        // [Mandatory] || A language key for the displayed text.
-    "hover_key": "string",  // [Optional]  || A language key for text to display on hover. Defaults to the value used by "key".
     "x_offset": int,        // [Optional]  || The x-offset, in pixels, for drawing the text. Defaults to 0.
     "y_offset": int,        // [Optional]  || The y-offset, in pixels, for drawing the text. Defaults to -4.
     "color": int,           // [Optional]  || The color of the text. Defaults to white (0xFFFFFF).
-    "hover_color": int,     // [Optional]  || The color of the text when hovered. Defaults to the value used by "color".
     "drop_shadow": boolean  // [Optional]  || If the text will have a drop shadow. Defaults to true.
 }
 ```

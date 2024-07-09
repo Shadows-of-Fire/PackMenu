@@ -20,8 +20,10 @@ This object references the following objects:
     "anchor": AnchorPoint,      // [Optional]  || The anchor point for the button. Defaults to the "default" anchor point.
     "sprites": WidgetSprites,   // [Optional]  || The sprites for the button. Defaults to the vanilla sprites.
     "icon": ButtonIcon,         // [Optional]  || An optional button icon to draw. Defaults to no icon.
+    "hover_icon": ButtonIcon,   // [Optional]  || The icon drawn when the button is hovered. Defaults to the value of "icon".
     "action": ButtonAction,     // [Mandatory] || The action performed by this button on click.
     "text": ButtonText,         // [Optional]  || The text to draw on this button. Defaults to no text.
+    "hover_text": ButtonText,   // [Optional]  || The text to draw when the button is hovered. Defaults to the value of "text".
     "active": boolean,          // [Optional]  || If this button is active and can be clicked. Defaults to true.
     "scale_x": float,           // [Optional]  || A scale factor for x values. May have uncertain results if the reciprocal is not an integer.
     "scale_y": float            // [Optional]  || A scale factor for y values. May have uncertain results if the reciprocal is not an integer.
