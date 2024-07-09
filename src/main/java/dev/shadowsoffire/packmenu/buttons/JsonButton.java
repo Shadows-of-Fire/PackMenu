@@ -20,6 +20,11 @@ import net.minecraft.network.chat.Style;
 
 public class JsonButton extends Button {
 
+    /**
+     * Number of spaces placed between the two copies of the string when rendering rotating overflow text.
+     */
+    public static final String MESSAGE_SEPARATOR = "      ";
+
     public static final Codec<JsonButton> CODEC = RecordCodecBuilder.create(inst -> inst.group(
         Codec.INT.fieldOf("x").forGetter(JsonButton::getXPos),
         Codec.INT.fieldOf("y").forGetter(JsonButton::getYPos),
@@ -122,7 +127,7 @@ public class JsonButton extends Button {
 
     @Override
     public Component getMessage() {
-        if (this.isHovered) {
+        if (this.isHoveredOrFocused()) {
             return this.hoverMessage;
         }
         return super.getMessage();
@@ -159,28 +164,41 @@ public class JsonButton extends Button {
         String msg = I18n.get(text.key());
 
         int strWidth = mc.font.width(msg);
+
         if (strWidth <= this.width - 6) {
-            drawCenteredString(stack, mc.font, msg, this.getX() + this.width / 2 + text.xOff(), this.getY() + this.height / 2 + text.yOff(), text.color(), text.dropShadow());
+            int x = this.getX() + this.width / 2 - mc.font.width(msg) / 2 + text.xOff();
+            int y = this.getY() + this.height / 2 - mc.font.lineHeight / 2 + text.yOff();
+            stack.drawString(mc.font, msg, x, y, text.color(), text.dropShadow());
         }
-        else if (!this.isHovered) {
+        else if (!this.isHoveredOrFocused()) {
             this.scrollCounter = 0;
+
             int ellipsisWidth = mc.font.width("...");
+            msg = trimStringToWidth(FormattedText.of(msg), this.width - 6 - ellipsisWidth).getString().trim() + "...";
 
-            if (strWidth > ellipsisWidth) {
-                msg = trimStringToWidth(FormattedText.of(msg), this.width - 6 - ellipsisWidth).getString().trim() + "...";
-            }
-
-            drawCenteredString(stack, mc.font, msg, this.getX() + this.width / 2 + text.xOff(), this.getY() + this.height / 2 + text.yOff(), text.color(), text.dropShadow());
+            int x = this.getX() + this.width / 2 - mc.font.width(msg) / 2 + text.xOff();
+            int y = this.getY() + this.height / 2 - mc.font.lineHeight / 2 + text.yOff();
+            stack.drawString(mc.font, msg, x, y, text.color(), text.dropShadow());
         }
         else {
-            int halfLen = mc.font.width(msg + "      ");
-            msg += "      " + msg;
+            String origMsg = msg;
+            int halfLen = mc.font.width(msg + MESSAGE_SEPARATOR); // Width of the half plus the separator, before we add the second copy
+            msg += MESSAGE_SEPARATOR + msg;
+
             stack.pose().pushPose();
-            double d0 = mc.getWindow().getGuiScale();
-            float y = Minecraft.getInstance().screen.height - this.getY() - this.height;
-            RenderSystem.enableScissor((int) (this.getX() * d0), (int) (y * d0), (int) (d0 * this.width), (int) (d0 * this.height));
+            double gScale = mc.getWindow().getGuiScale();
+            float scissorY = Minecraft.getInstance().screen.height - this.getY() - this.height;
+            RenderSystem.enableScissor((int) (this.getX() * gScale), (int) (scissorY * gScale), (int) (gScale * this.width), (int) (gScale * this.height));
             stack.pose().translate((-this.scrollCounter - partial) % halfLen, 0, 0);
-            stack.drawString(mc.font, msg, this.getX() + this.width / 8 + text.xOff(), this.getY() + this.height / 2 + text.yOff(), text.color(), text.dropShadow());
+
+            // To ensure we don't snap to a random starting position, we have to use the same logic for the base x coord as in the no-hover case.
+            int ellipsisWidth = mc.font.width("...");
+            origMsg = trimStringToWidth(FormattedText.of(msg), this.width - 6 - ellipsisWidth).getString().trim() + "...";
+            int baseWidth = mc.font.width(origMsg);
+
+            int x = this.getX() + this.width / 2 - baseWidth / 2 + text.xOff();
+            int y = this.getY() + this.height / 2 - mc.font.lineHeight / 2 + text.yOff();
+            stack.drawString(mc.font, msg, x, y, text.color(), text.dropShadow());
             RenderSystem.disableScissor();
             stack.pose().popPose();
         }

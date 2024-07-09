@@ -17,7 +17,7 @@ public record ButtonText(String key, int xOff, int yOff, int color, boolean drop
     public static final Codec<ButtonText> CODEC = RecordCodecBuilder.create(inst -> inst.group(
         Codec.STRING.fieldOf("key").forGetter(ButtonText::key),
         Codec.INT.optionalFieldOf("x_offset", 0).forGetter(ButtonText::xOff),
-        Codec.INT.optionalFieldOf("y_offset", -4).forGetter(ButtonText::yOff),
+        Codec.INT.optionalFieldOf("y_offset", 0).forGetter(ButtonText::yOff),
         Codec.INT.optionalFieldOf("color", 0xFFFFFF).forGetter(ButtonText::color),
         Codec.BOOL.optionalFieldOf("drop_shadow", true).forGetter(ButtonText::dropShadow))
         .apply(inst, ButtonText::new));
