@@ -37,7 +37,7 @@ public class ButtonManager extends SimpleJsonResourceReloadListener {
             }
             catch (Exception e) {
                 PackMenu.LOGGER.error("Failed to load button {}.", obj.getKey());
-                e.printStackTrace();
+                PackMenu.LOGGER.error("Exception: ", e);
             }
         }
         PackMenu.LOGGER.info("Loaded {} buttons from resources.", this.buttons.size());
