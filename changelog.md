@@ -1,3 +1,6 @@
+## 7.0.3
+* Removed uses of `printStackTrace`, which might ease rare issues where `System.err` is unstable.
+
 ## 7.0.2
 * Made hover objects more customizable.
   * Removed hover-related fields from `ButtonText` and added separate `hover_text` and `hover_icon` fields to `JsonButton`.
