@@ -396,7 +396,7 @@ tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurs
         }
 
         mainFile.withAdditionalFile(sourcesJar)
-        mainFile.withAdditionalFile(stockDataPack)
+        // mainFile.withAdditionalFile(stockDataPack)
     }
 }
 

@@ -1,3 +1,6 @@
+## 7.0.4
+* Updated to Placebo 9.9.0
+
 ## 7.0.3
 * Removed uses of `printStackTrace`, which might ease rare issues where `System.err` is unstable.
 
