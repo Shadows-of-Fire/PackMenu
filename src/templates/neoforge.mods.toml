@@ -31,10 +31,3 @@ ${mixinConfig}
     versionRange="[${forgeVersion},)"
     ordering="NONE"
     side="BOTH"
-
-[[dependencies.${modid}]]
-    modId="placebo"
-    type="required"
-    versionRange="[${placeboVersion},)"
-    ordering="NONE"
-    side="BOTH"

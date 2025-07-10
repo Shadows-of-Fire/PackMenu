@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "package": "dev.shadowsoffire.packmenu.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "refmap": "packmenu.refmap.json",
+    "mixins": [
+
+    ],
+    "client": [
+        "client.MixinTitleScreen"
+    ],
+    "minVersion": "0.8"
+}

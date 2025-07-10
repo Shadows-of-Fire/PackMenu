@@ -1,0 +1,34 @@
+modLoader="javafml"
+
+loaderVersion="[2,)"
+
+license="MIT License"
+
+[[mods]] #mandatory
+
+modId="packmenu"
+
+version="7.0.3"
+
+displayName="PackMenu"
+
+authors="Shadows_of_Fire"
+
+description='''A data-driven main menu mod!'''
+
+[[mixins]]
+config="packmenu.mixins.json"
+
+[[dependencies.packmenu]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.packmenu]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1.187,)"
+    ordering="NONE"
+    side="BOTH"
